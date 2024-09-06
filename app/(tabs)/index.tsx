@@ -1,7 +1,6 @@
 import {
   Text,
   View,
-  SafeAreaView,
   StatusBar,
   FlatList,
   Image,
@@ -12,6 +11,8 @@ import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Link } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import StoryModal from "@/components/StoryModal";
 
 // Story type
 type Story = {
@@ -245,22 +246,17 @@ export default function HomeScreen() {
                   showsHorizontalScrollIndicator={false}
                   renderItem={({ item }) => (
                     <View className="w-20 h-24 items-center justify-center">
-                      <Link
-                        href="/story[id]"
+                      <TouchableOpacity
+                        className="w-16 h-16 items-center p-1 justify-center rounded-full"
+                        style={{
+                          backgroundColor: Colors[colorScheme ?? "light"].tint,
+                        }}
                       >
-                        <TouchableOpacity
-                          className="w-16 h-16 items-center p-1 justify-center rounded-full"
-                          style={{
-                            backgroundColor:
-                              Colors[colorScheme ?? "light"].tint,
-                          }}
-                        >
-                          <Image
-                            source={{ uri: item.avatar }}
-                            className="w-full h-full rounded-full"
-                          />
-                        </TouchableOpacity>
-                      </Link>
+                        <Image
+                          source={{ uri: item.avatar }}
+                          className="w-full h-full rounded-full"
+                        />
+                      </TouchableOpacity>
                       <Text
                         className="text-center font-bold"
                         style={{
@@ -403,6 +399,9 @@ export default function HomeScreen() {
           )}
         />
       </View>
+      {isModalOpen && (
+        <StoryModal isModalOpen setIsModalOpen={setIsModalOpen} />
+      )}
     </SafeAreaView>
   );
 }

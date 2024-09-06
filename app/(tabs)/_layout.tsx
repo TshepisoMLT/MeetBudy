@@ -30,6 +30,7 @@ export default function TabLayout() {
             backgroundColor: Colors[colorScheme ?? "light"].background,
             height:100,
           },
+          headerShown:true,
           headerLeft: () => (
             <View className="ml-4 h-12 w-12 rounded-full bg-slate-300">
               <Image
