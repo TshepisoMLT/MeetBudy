@@ -1,9 +1,14 @@
-import { Tabs } from "expo-router";
+/**
+ * Defines the main tab layout for the application, including the header and tab bar.
+ * The tab layout includes a home screen with a user avatar and settings icon in the header.
+ * The tab bar and header styles are configured based on the current color scheme.
+ */
+import { router, Tabs } from "expo-router";
 import React from "react";
-import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Image, View } from "react-native";
+import { Image, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 // Define the TabLayout component
 export default function TabLayout() {
@@ -21,7 +26,7 @@ export default function TabLayout() {
         headerStyle: {
           backgroundColor: Colors[colorScheme ?? "light"].background,
         },
-        headerShadowVisible:true,
+        headerShadowVisible: true,
         // Set the tab bar style (Note: negative height might cause issues)
         tabBarStyle: {
           height: -50,
@@ -40,23 +45,30 @@ export default function TabLayout() {
           headerShown: true,
           // Define the header left component (user avatar)
           headerLeft: () => (
-            <View className="ml-4 h-12 w-12 rounded-full bg-slate-300">
+            <TouchableOpacity
+              onPress={() => router.push("/profile")}
+              className="ml-4 h-12 w-12 rounded-full bg-slate-300"
+            >
               <Image
                 source={{
                   uri: "https://randomuser.me/api/portraits/men/10.jpg",
                 }}
                 className="w-full h-full rounded-full"
               />
-            </View>
+            </TouchableOpacity>
           ),
           // Define the header right component (settings icon)
           headerRight: () => (
-            <View className="mr-4 rounded-full p-2">
-              <TabBarIcon
+            <TouchableOpacity
+              onPress={() => router.push("/contact")}
+              className="mr-4 rounded-full p-2"
+            >
+              <Ionicons
                 name="settings-outline"
                 color={Colors[colorScheme ?? "light"].tint}
+                size={28}
               />
-            </View>
+            </TouchableOpacity>
           ),
           // Set the header title
           headerTitle: "MeetBudy",

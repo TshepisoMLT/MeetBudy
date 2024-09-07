@@ -1,14 +1,19 @@
-// Story type
+/**
+ * Defines the structure of a user story, including the story's unique identifier, the name and avatar of the user who posted the story, the timestamp when the story was posted, the URL of the story image, and an optional text overlay for the story.
+ *
+ * The `stories` array contains a collection of user stories with the defined structure.
+ */
+// Define the Story type
 type Story = {
-  id: string;
-  name: string;
-  avatar: string;
-  postedTime: string;
-  storyImage: string;
-  textOverlay?: string;
+  id: string;           // Unique identifier for the story
+  name: string;         // Name of the user who posted the story
+  avatar: string;       // URL of the user's avatar image
+  postedTime: string;   // Timestamp when the story was posted
+  storyImage: string;   // URL of the story image
+  textOverlay?: string; // Optional text overlay for the story
 };
 
-// Users stories array
+// Array of user stories
 export const stories: Story[] = [
   {
     id: "1",

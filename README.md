@@ -1,50 +1,69 @@
-# Welcome to your Expo app 👋
+# MeetBudy
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+MeetBudy is a cutting-edge social networking platform developed using React Native and Expo, designed to revolutionize the way people connect, share experiences, and interact online.
 
-## Get started
+## Table of Contents
 
-1. Install dependencies
+* [Key Features](#key-features)
+* [Technology Stack](#technology-stack)
+* [Getting Started](#getting-started)
+* [Project Architecture](#project-architecture)
+* [How to Contribute](#how-to-contribute)
+* [License Information](#license-information)
 
-   ```bash
-   npm install
-   ```
+## Key Features
 
-2. Start the app
+* Immersive feed with dynamic posts and engaging stories
+* Rich post interactions (like, comment, share, save)
+* Customizable user profiles with detailed information
+* Interactive story viewing with real-time reactions and threaded replies
+* Seamless dark mode integration for comfortable browsing
+* Intuitive contact form for efficient user support
+* Real-time messaging and video calling capabilities
+* Event creation and management
+* Interest-based group discussions
 
-   ```bash
-    npx expo start
-   ```
+## Technology Stack
 
-In the output, you'll find options to open the app in a
+* React Native for cross-platform mobile development
+* Expo for rapid development and easy deployment
+* TypeScript for enhanced code quality and maintainability
+* Tailwind CSS for efficient and responsive styling
+* Expo Router for seamless navigation and deep linking
+* Redux for state management
+* Firebase for backend services and real-time database
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Getting Started
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+1. Clone the repository: `git clone https://github.com/TshepisoMLT/MeetBudy.git`
+2. Navigate to the project directory: `cd meetbudy`
+3. Install dependencies: `npm install` or `yarn install`
+4. Set up environment variables: Copy `.env.example` to `.env` and fill in the required values
+5. Start the development server: `npx expo start` or `yarn expo start`
 
-## Get a fresh project
+## Project Architecture
 
-When you're ready, run:
+* `app/`: Core application screens and layouts
+* `components/`: Reusable React components for consistent UI
+* `constants/`: Application-wide constants including theme colors and TypeScript types
+* `hooks/`: Custom React hooks for shared logic
+* `utils/`: Utility functions, API calls, and mock data for development
+* `store/`: Redux store configuration and slices
+* `assets/`: Static assets including images and fonts
+* `navigation/`: Navigation configuration and custom navigation components
 
-```bash
-npm run reset-project
-```
+## How to Contribute
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+We enthusiastically welcome contributions to MeetBudy! To get started:
 
-## Learn more
+1. Fork the repository
+2. Create a new branch: `git checkout -b feature/your-feature-name`
+3. Make your changes and commit them: `git commit -m 'Add some feature'`
+4. Push to the branch: `git push origin feature/your-feature-name`
+5. Submit a pull request
 
-To learn more about developing your project with Expo, look at the following resources:
+Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on code style, commit messages, and the review process.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## License Information
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+MeetBudy is open-source software licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.

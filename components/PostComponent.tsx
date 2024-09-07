@@ -1,3 +1,11 @@
+/**
+ * Renders a single post component with user information, post content, and interaction buttons.
+ *
+ * @param {PostComponentProps} props - The props for the PostComponent.
+ * @param {Post} props.item - The post data to be displayed.
+ * @param {(item: Post | null) => void} props.toggleCommentModal - A function to toggle the comment modal for the post.
+ * @returns {React.ReactElement} - The rendered PostComponent.
+ */
 import React, { memo, useCallback, useState } from "react";
 import {
   Image,
@@ -13,11 +21,11 @@ import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { Post } from "@/constants/Types";
 
- // Define the props for the PostComponent component
- type PostComponentProps = {
-   item: Post;
-   toggleCommentModal: (item: Post | null) => void;
- };
+// Define the props for the PostComponent component
+type PostComponentProps = {
+  item: Post;
+  toggleCommentModal: (item: Post | null) => void;
+};
 
 // PostComponent: Renders a single post
 export const PostComponent = memo(
@@ -98,12 +106,14 @@ export const PostComponent = memo(
         {/* Post header: User info and options */}
         <View className="flex flex-row items-center p-3 justify-between">
           <View className="flex flex-row items-center">
+            {/* User avatar */}
             <TouchableOpacity>
               <Image
                 source={{ uri: item.avatar }}
                 className="w-10 h-10 rounded-full"
               />
             </TouchableOpacity>
+            {/* User name and post time */}
             <View className="ml-3">
               <TouchableOpacity>
                 <Text
@@ -121,6 +131,7 @@ export const PostComponent = memo(
               </Text>
             </View>
           </View>
+          {/* Post options button */}
           <TouchableOpacity className="p-2 opacity-50">
             <Ionicons
               name="ellipsis-horizontal"
@@ -145,6 +156,7 @@ export const PostComponent = memo(
           onPress={() => toggleCommentModal(item)}
           className="relative px-3"
         >
+          {/* Animated image with fade-in effect */}
           <Animated.Image
             source={{ uri: item.image }}
             className="w-full h-80 rounded-lg"
@@ -226,7 +238,8 @@ export const PostComponent = memo(
       </View>
     );
   },
-    (prevProps, nextProps) => {
-      return prevProps.item.id === nextProps.item.id;
-    }
+  // Memoization comparison function
+  (prevProps, nextProps) => {
+    return prevProps.item.id === nextProps.item.id;
+  }
 );

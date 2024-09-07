@@ -1,6 +1,7 @@
 import { Post } from "@/constants/Types";
 
-// Users posts array
+// Array of user posts
+
 export const posts: Post[] = [
   {
     id: "1",
@@ -8,12 +9,12 @@ export const posts: Post[] = [
     avatar: "https://randomuser.me/api/portraits/men/1.jpg",
     image: "https://picsum.photos/seed/1/400/300",
     caption: "Just had an amazing day at the beach!",
-    likes: Math.floor(Math.random() * 100),
+    likes: Math.floor(Math.random() * 100), // Generate random number of likes
     comments: 3,
-    shares: Math.floor(Math.random() * 10),
+    shares: Math.floor(Math.random() * 10), // Generate random number of shares
     postedTime: new Date(
       Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-    ).toISOString(),
+    ).toISOString(), // Generate random post time within the last week
     commentList: [
       {
         id: "1",
@@ -24,7 +25,7 @@ export const posts: Post[] = [
         comment: "Great post!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
       {
         id: "2",
@@ -35,7 +36,7 @@ export const posts: Post[] = [
         comment: "Looks like a blast!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
       {
         id: "3",
@@ -46,7 +47,7 @@ export const posts: Post[] = [
         comment: "I love this post!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
     ],
   },
@@ -56,12 +57,12 @@ export const posts: Post[] = [
     avatar: "https://randomuser.me/api/portraits/women/2.jpg",
     image: "https://picsum.photos/seed/2/400/300",
     caption: "Enjoying a cozy night in with a good book!",
-    likes: Math.floor(Math.random() * 100),
+    likes: Math.floor(Math.random() * 100), // Generate random number of likes
     comments: 6,
-    shares: Math.floor(Math.random() * 10),
+    shares: Math.floor(Math.random() * 10), // Generate random number of shares
     postedTime: new Date(
       Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-    ).toISOString(),
+    ).toISOString(), // Generate random post time within the last week
     commentList: [
       {
         id: "1",
@@ -72,7 +73,7 @@ export const posts: Post[] = [
         comment: "Great post!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
       {
         id: "2",
@@ -83,7 +84,7 @@ export const posts: Post[] = [
         comment: "Looks like a blast!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
       {
         id: "3",
@@ -94,7 +95,7 @@ export const posts: Post[] = [
         comment: "I love this post!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
       {
         id: "4",
@@ -105,7 +106,7 @@ export const posts: Post[] = [
         comment: "I can relate to this post!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
       {
         id: "5",
@@ -116,7 +117,7 @@ export const posts: Post[] = [
         comment: "I'm in the same boat!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
       {
         id: "6",
@@ -127,7 +128,7 @@ export const posts: Post[] = [
         comment: "Congratulations on your new family member!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
       {
         id: "7",
@@ -138,7 +139,7 @@ export const posts: Post[] = [
         comment: "Well deserved! You'll do great!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
     ],
   },
@@ -148,12 +149,12 @@ export const posts: Post[] = [
     avatar: "https://randomuser.me/api/portraits/men/3.jpg",
     image: "https://picsum.photos/seed/3/400/300",
     caption: "Just finished my first marathon! Feeling accomplished!",
-    likes: Math.floor(Math.random() * 100),
+    likes: Math.floor(Math.random() * 100), // Generate random number of likes
     comments: 2,
-    shares: Math.floor(Math.random() * 10),
+    shares: Math.floor(Math.random() * 10), // Generate random number of shares
     postedTime: new Date(
       Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-    ).toISOString(),
+    ).toISOString(), // Generate random post time within the last week
     commentList: [
       {
         id: "1",
@@ -164,7 +165,7 @@ export const posts: Post[] = [
         comment: "Congratulations! That's a huge achievement!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
       {
         id: "2",
@@ -175,7 +176,7 @@ export const posts: Post[] = [
         comment: "You're an inspiration! Well done!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
     ],
   },
@@ -185,12 +186,12 @@ export const posts: Post[] = [
     avatar: "https://randomuser.me/api/portraits/women/4.jpg",
     image: "https://picsum.photos/seed/4/400/300",
     caption: "Exploring the beautiful streets of Paris!",
-    likes: Math.floor(Math.random() * 100),
+    likes: Math.floor(Math.random() * 100), // Generate random number of likes
     comments: 2,
-    shares: Math.floor(Math.random() * 10),
+    shares: Math.floor(Math.random() * 10), // Generate random number of shares
     postedTime: new Date(
       Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-    ).toISOString(),
+    ).toISOString(), // Generate random post time within the last week
     commentList: [
       {
         id: "1",
@@ -201,7 +202,7 @@ export const posts: Post[] = [
         comment: "Paris is magical! Enjoy every moment!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
       {
         id: "2",
@@ -212,7 +213,7 @@ export const posts: Post[] = [
         comment: "Don't forget to visit the Eiffel Tower!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
     ],
   },
@@ -222,12 +223,12 @@ export const posts: Post[] = [
     avatar: "https://randomuser.me/api/portraits/men/5.jpg",
     image: "https://picsum.photos/seed/5/400/300",
     caption: "Just adopted this cute little puppy!",
-    likes: Math.floor(Math.random() * 100),
+    likes: Math.floor(Math.random() * 100), // Generate random number of likes
     comments: 1,
-    shares: Math.floor(Math.random() * 10),
+    shares: Math.floor(Math.random() * 10), // Generate random number of shares
     postedTime: new Date(
       Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-    ).toISOString(),
+    ).toISOString(), // Generate random post time within the last week
     commentList: [
       {
         id: "1",
@@ -238,7 +239,7 @@ export const posts: Post[] = [
         comment: "Aww, so adorable! What's its name?",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
     ],
   },
@@ -248,12 +249,12 @@ export const posts: Post[] = [
     avatar: "https://randomuser.me/api/portraits/women/6.jpg",
     image: "https://picsum.photos/seed/6/400/300",
     caption: "Celebrating my graduation day!",
-    likes: Math.floor(Math.random() * 100),
+    likes: Math.floor(Math.random() * 100), // Generate random number of likes
     comments: 2,
-    shares: Math.floor(Math.random() * 10),
+    shares: Math.floor(Math.random() * 10), // Generate random number of shares
     postedTime: new Date(
       Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-    ).toISOString(),
+    ).toISOString(), // Generate random post time within the last week
     commentList: [
       {
         id: "1",
@@ -264,7 +265,7 @@ export const posts: Post[] = [
         comment: "Congratulations! Your hard work paid off!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
       {
         id: "2",
@@ -275,7 +276,7 @@ export const posts: Post[] = [
         comment: "So proud of you! What's next?",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
     ],
   },
@@ -285,12 +286,12 @@ export const posts: Post[] = [
     avatar: "https://randomuser.me/api/portraits/men/7.jpg",
     image: "https://picsum.photos/seed/7/400/300",
     caption: "Just landed my dream job!",
-    likes: Math.floor(Math.random() * 100),
+    likes: Math.floor(Math.random() * 100), // Generate random number of likes
     comments: 1,
-    shares: Math.floor(Math.random() * 10),
+    shares: Math.floor(Math.random() * 10), // Generate random number of shares
     postedTime: new Date(
       Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-    ).toISOString(),
+    ).toISOString(), // Generate random post time within the last week
     commentList: [
       {
         id: "1",
@@ -301,7 +302,7 @@ export const posts: Post[] = [
         comment: "That's fantastic news! Congratulations!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
     ],
   },
@@ -311,12 +312,12 @@ export const posts: Post[] = [
     avatar: "https://randomuser.me/api/portraits/women/8.jpg",
     image: "https://picsum.photos/seed/8/400/300",
     caption: "Trying out a new recipe today!",
-    likes: Math.floor(Math.random() * 100),
+    likes: Math.floor(Math.random() * 100), // Generate random number of likes
     comments: 2,
-    shares: Math.floor(Math.random() * 10),
+    shares: Math.floor(Math.random() * 10), // Generate random number of shares
     postedTime: new Date(
       Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-    ).toISOString(),
+    ).toISOString(), // Generate random post time within the last week
     commentList: [
       {
         id: "1",
@@ -327,7 +328,7 @@ export const posts: Post[] = [
         comment: "Looks delicious! Can you share the recipe?",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
       {
         id: "2",
@@ -338,7 +339,7 @@ export const posts: Post[] = [
         comment: "I'm getting hungry just looking at it!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
     ],
   },
@@ -348,12 +349,12 @@ export const posts: Post[] = [
     avatar: "https://randomuser.me/api/portraits/men/9.jpg",
     image: "https://picsum.photos/seed/9/400/300",
     caption: "Enjoying a relaxing day at the park.",
-    likes: Math.floor(Math.random() * 100),
+    likes: Math.floor(Math.random() * 100), // Generate random number of likes
     comments: 2,
-    shares: Math.floor(Math.random() * 10),
+    shares: Math.floor(Math.random() * 10), // Generate random number of shares
     postedTime: new Date(
       Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-    ).toISOString(),
+    ).toISOString(), // Generate random post time within the last week
     commentList: [
       {
         id: "1",
@@ -364,7 +365,7 @@ export const posts: Post[] = [
         comment: "Beautiful scenery! What a perfect day!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
       {
         id: "2",
@@ -375,7 +376,7 @@ export const posts: Post[] = [
         comment: "I wish I could be there!",
         timestamp: new Date(
           Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-        ).toISOString(),
+        ).toISOString(), // Generate random post time within the last week
       },
     ],
   },

@@ -1,3 +1,15 @@
+/**
+ * The `StoryModal` component is responsible for rendering a modal that displays a story, including the story image, user information, and interactive elements such as reaction emojis and a reply input.
+ *
+ * The component receives the following props:
+ * - `isStoryModalOpen`: a boolean indicating whether the story modal should be displayed
+ * - `toggleStoryModal`: a function that toggles the visibility of the story modal
+ * - `openStory`: an object of type `Story` that contains the details of the story to be displayed
+ *
+ * The component uses various React Native components and hooks to implement the functionality, including `ReactNativeModal`, `Animated`, and `useColorScheme`. It also uses the `useEffect` hook to prefetch the story image and manage the image loading state.
+ *
+ * The component renders the story modal with the user's avatar, name, and post date, as well as the story image (with an optional text overlay) and interactive elements such as reaction emojis and a reply input. The component also handles the sharing of the story using the `Share` API.
+ */
 import {
   View,
   Text,
@@ -20,7 +32,6 @@ import Animated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 import { Story } from "@/constants/Types";
-
 
 // Define the props for the StoryModal component
 type StoryModalProps = {
@@ -46,10 +57,12 @@ export default function StoryModal({
   // Effect to prefetch the story image when a story is opened
   useEffect(() => {
     if (openStory) {
+      // Prefetch the image to improve loading performance
       Image.prefetch(openStory.storyImage)
         .then(() => setImageLoaded(true))
         .catch((error) => console.error("Error prefetching image:", error));
     }
+    // Clean up function to reset image loaded state
     return () => {
       setImageLoaded(false);
     };
@@ -62,29 +75,28 @@ export default function StoryModal({
     };
   });
 
- 
   // Function to handle sharing the story
-    const handleShare = async () => {
-      try {
-        // Attempt to share the story using the Share API
-        await Share.share({
-          // Construct the message based on the platform
-          message: `${Platform.OS === "android" ? 
-            // For Android, include the story image URL in the message
-            `Check out this story from ${openStory?.name}!, ${openStory?.storyImage} ` :
-            // For iOS, only include the story name
-            `Check out this story from ${openStory?.name}!
-          `}`,
-          // Set the URL to the story image
-          url: openStory?.storyImage,
-          // Set the title for the share dialog
-          title: "Share Story",
-        });
-      } catch (error) {
-        // Log any errors that occur during sharing
-        console.error("Error sharing story:", error);
-      }
-    };
+  const handleShare = async () => {
+    try {
+      // Attempt to share the story using the Share API
+      await Share.share({
+        // Construct the message based on the platform
+        message: `${Platform.OS === "android" ? 
+          // For Android, include the story image URL in the message
+          `Check out this story from ${openStory?.name}!, ${openStory?.storyImage} ` :
+          // For iOS, only include the story name
+          `Check out this story from ${openStory?.name}!
+        `}`,
+        // Set the URL to the story image
+        url: openStory?.storyImage,
+        // Set the title for the share dialog
+        title: "Share Story",
+      });
+    } catch (error) {
+      // Log any errors that occur during sharing
+      console.error("Error sharing story:", error);
+    }
+  };
 
   // Array of reaction emojis
   const reactionEmojis = ["👍", "❤️", "😂", "😮", "😢", "😡"];
@@ -127,6 +139,7 @@ export default function StoryModal({
           {/* Header section with user info and controls */}
           <View className="p-2 items-center flex flex-row bg-slate-500/30 absolute top-0 left-0 right-0 z-10">
             <View style={{ flexDirection: "row", alignItems: "center" }}>
+              {/* User avatar */}
               <TouchableOpacity onPress={() => toggleStoryModal(null)}>
                 <Image
                   source={{ uri: openStory?.avatar }}
@@ -138,6 +151,7 @@ export default function StoryModal({
                   }}
                 />
               </TouchableOpacity>
+              {/* User name and post date */}
               <View>
                 <Text
                   style={{
@@ -181,6 +195,7 @@ export default function StoryModal({
           {/* Main content area for the story image */}
           <View style={{ flex: 1 }}>
             {imageLoaded ? (
+              // Display the story image when loaded
               <Animated.View style={[{ flex: 1 }, animatedStyle]}>
                 <Image
                   source={{ uri: openStory?.storyImage }}
@@ -247,6 +262,7 @@ export default function StoryModal({
             }}
             className="p-2 items-center flex flex-row  absolute bottom-0 left-0 right-0"
           >
+            {/* Text input for reply */}
             <TextInput
               style={{
                 flex: 1,

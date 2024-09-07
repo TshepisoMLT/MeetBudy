@@ -1,9 +1,15 @@
+/**
+ * StoriesComponent is a React component that displays a horizontal list of user stories.
+ *
+ * @param toggleStoryModal - A function that is called when a story is pressed, passing the story object as a parameter.
+ * @returns A React element that renders the stories list.
+ */
 import React, { memo } from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { stories } from "@/utils/Stories";
-import {Story } from "@/constants/Types";
+import { Story } from "@/constants/Types";
 
 // StoriesComponent displays a horizontal list of user stories
 export const StoriesComponent = memo(({
@@ -16,22 +22,26 @@ export const StoriesComponent = memo(({
 
   return (
     <View className="py-4">
+      {/* Stories header */}
       <Text
         className="text-lg font-bold mb-2 px-4"
         style={{ color: Colors[colorScheme ?? "light"].text }}
       >
         Stories
       </Text>
+      {/* Horizontal scrollable list of stories */}
       <FlatList
         data={stories}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 12 }}
         renderItem={({ item }) => (
+          // Touchable story item
           <TouchableOpacity
             onPress={() => toggleStoryModal(item)}
             className="mr-4 items-center"
           >
+            {/* Story avatar container */}
             <View
               className="w-20 h-20 items-center justify-center mb-1"
               style={{
@@ -40,6 +50,7 @@ export const StoriesComponent = memo(({
                 borderColor: Colors[colorScheme ?? "light"].tint,
               }}
             >
+              {/* Story avatar image */}
               <Image
                 source={{ uri: item.avatar }}
                 style={{
@@ -51,6 +62,7 @@ export const StoriesComponent = memo(({
                 }}
               />
             </View>
+            {/* Story user name */}
             <Text
               className="text-center text-xs"
               style={{
