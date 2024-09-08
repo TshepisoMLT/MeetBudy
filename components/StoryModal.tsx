@@ -168,7 +168,15 @@ export default function StoryModal({
                     fontSize: 12,
                   }}
                 >
-                  {openStory && new Date(openStory.postedTime).toDateString()}
+                  {openStory &&
+                    new Date(openStory.postedTime).toLocaleString(undefined, {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })}
                 </Text>
               </View>
             </View>

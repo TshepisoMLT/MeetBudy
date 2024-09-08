@@ -127,7 +127,14 @@ export const PostComponent = memo(
                 className="text-xs"
                 style={{ color: Colors[colorScheme ?? "light"].textSecondary }}
               >
-                {item.postedTime}
+                {new Date(item.postedTime).toLocaleString(undefined, {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false
+                })}
               </Text>
             </View>
           </View>

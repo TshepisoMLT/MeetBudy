@@ -4,79 +4,171 @@
  * The component uses a FlatList to render the posts and a custom ItemLayout function to optimize the layout.
  * It also includes a StoriesComponent at the top of the feed and handles the toggling of the story and comment modals.
  */
+
 import {
-    View,
+  View,
   StatusBar,
   FlatList,
   RefreshControl,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  Image,
 } from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
-import { useState, useCallback } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import StoryModal from "@/components/StoryModal";
 import { StoriesComponent } from "@/components/StoriesContainer";
 import { PostComponent } from "@/components/PostComponent";
-import { posts } from "@/utils/Posts";
 import CommentsModal from "@/components/CommentsModal";
 import { Post, Story } from "@/constants/Types";
+import { useStoryStore } from "@/stores/storyStore";
+import { useCommentStore } from "@/stores/commentStore";
+import useSWR from "swr";
+import { getPosts } from "@/utils/home/getPosts";
+import { NetworkError } from "@/utils/home/getPosts";
+import { useHomeStore } from "@/stores/homeStore";
 
 // Function to calculate the layout for each item in the FlatList
-const ItemLayout = (data: any, index: number) => {
-  // Destructure height and width from the data array at the given index
-  const { height, width } = data[index];
+const ItemLayout = (data: any, index: number) => ({
+  length: data[index].height,
+  offset: index * data[index].height,
+  index,
+});
 
-  // Return an object with layout information:
-  // - length: height of the item
-  // - offset: vertical position of the item (height multiplied by index)
-  // - index: position of the item in the list
-  return { length: height, offset: index * height, index };
+// Fetcher function for SWR
+const fetcher = async () => {
+  try {
+    return await getPosts("http://192.168.41.164:8000/api/v1/posts");
+  } catch (error) {
+    if (error instanceof NetworkError) {
+      throw new Error(
+        "Network error. Please check your connection and try again."
+      );
+    } else {
+      throw new Error("An unexpected error occurred. Please try again later.");
+    }
+  }
 };
 
 // Main component for the Home screen
 export default function HomeScreen() {
-  
-  // Get the current color scheme (light or dark)
   const colorScheme = useColorScheme();
-  
-  // State variables for managing modals, posts, stories, and refresh status
-  const [isStoryModalOpen, setIsStoryModalOpen] = useState(false);
-  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
-  const [post, setPost] = useState<Post | null>(null);
-  const [openStory, setOpenStory] = useState<Story | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
+  const { isStoryModalOpen, setIsStoryModalOpen, openStory, setOpenStory } =
+    useStoryStore();
+  const { isCommentModalOpen, setIsCommentModalOpen, post, setPost } =
+    useCommentStore();
+  const { setDataRefreshing } = useHomeStore();
 
-  // Function to toggle the story modal and set the open story
-  const toggleStoryModal = (story: Story | null) => {
-    setIsStoryModalOpen(!isStoryModalOpen);
-    if (openStory) {
-      setOpenStory(null);
-      return;
-    }
-    setOpenStory(story);
-  };
+  const {
+    data: posts,
+    error,
+    isValidating,
+    mutate,
+  } = useSWR("/api/v1/posts", fetcher, {
+    revalidateOnReconnect: true,
+    shouldRetryOnError: true,
+    onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
+      if (error) {
+        console.error("uyfuyy", error);
+      }
+      console.log("is online:", config.isOnline());
+      if (config.isOnline()) {
+        revalidate({ 
+          retryCount: 5,
+         });
+      } else {
+        return;
+      }
+    },
+    keepPreviousData: true,
+    isOnline() {
+      return navigator.onLine;
+    },
+    refreshWhenOffline: false,
+    refreshInterval: 5 * 60 * 1000,
+  });
 
-  // Function to toggle the comment modal and set the current post
+  const toggleStoryModal = useCallback(
+    (story: Story | null) => {
+      setIsStoryModalOpen(!isStoryModalOpen);
+      setOpenStory(isStoryModalOpen ? null : story);
+    },
+    [isStoryModalOpen, setIsStoryModalOpen, setOpenStory]
+  );
+
   const toggleCommentModal = useCallback(
     (post: Post | null) => {
       setIsCommentModalOpen(!isCommentModalOpen);
-      if (isCommentModalOpen) {
-        setPost(null);
-        return;
-      }
-      setPost(post);
+      setPost(isCommentModalOpen ? null : post);
     },
-    [isCommentModalOpen]
+    [isCommentModalOpen, setIsCommentModalOpen, setPost]
   );
 
-  // Function to handle the refresh action
   const onRefresh = useCallback(() => {
-    setRefreshing(true);
+    mutate();
+  }, [mutate]);
 
-    // Simulate a refresh action
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, []);
+  const renderItem = useCallback(
+    ({ item }: { item: Post }) => (
+      <PostComponent item={item} toggleCommentModal={toggleCommentModal} />
+    ),
+    [toggleCommentModal]
+  );
+
+  const ListHeaderComponent = useMemo(
+    () => <StoriesComponent toggleStoryModal={toggleStoryModal} />,
+    [toggleStoryModal]
+  );
+
+  useEffect(() => {
+    isValidating ? setDataRefreshing(true) : setDataRefreshing(false);
+  }, [isValidating]);
+
+  if (!posts) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: Colors[colorScheme ?? "light"].background,
+        }}
+        className="flex-1 justify-center items-center"
+      >
+        <Text className="text-red-500 mb-4">{error?.message}</Text>
+        <Image
+          source={{
+            uri: "https://ouch-cdn2.icons8.com/uORZYvKIb8zcJIkQLEFsDguz7YjYruZWslRmb3bwWGs/rs:fit:368:368/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9zdmcvNzkz/LzMwZDliN2ZhLThi/N2MtNDBhOS1hN2Y2/LTBlODBmZGFlYzk2/ZC5zdmc.png",
+          }}
+          className="h-96 w-96"
+        />
+        <TouchableOpacity
+          onPress={() => mutate()}
+          className="bg-blue-500 px-4 py-2 rounded"
+        >
+          <Text
+            style={{
+              color: Colors[colorScheme ?? "light"].text,
+            }}
+            className="text-white text-lg"
+          >
+            Retry
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (!posts) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator
+          size="large"
+          color={Colors[colorScheme ?? "light"].tint}
+        />
+      </View>
+    );
+  }
 
   return (
     <View
@@ -85,25 +177,18 @@ export default function HomeScreen() {
         backgroundColor: Colors[colorScheme ?? "light"].background,
       }}
     >
-
-      {/* Set the status bar style based on the color scheme */}
       <StatusBar
         barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
       />
 
-      {/* FlatList to render the feed of posts */}
       <FlatList
-        ListHeaderComponent={() => (
-          <StoriesComponent toggleStoryModal={toggleStoryModal} />
-        )}
+        ListHeaderComponent={ListHeaderComponent}
         data={posts}
-        renderItem={({ item }) => (
-          <PostComponent item={item} toggleCommentModal={toggleCommentModal} />
-        )}
+        renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing}
+            refreshing={isValidating}
             onRefresh={onRefresh}
             colors={[Colors[colorScheme ?? "light"].tint]}
             tintColor={Colors[colorScheme ?? "light"].tint}
@@ -117,7 +202,6 @@ export default function HomeScreen() {
         initialNumToRender={10}
         onEndReachedThreshold={0.8}
         onEndReached={({ distanceFromEnd }) => {
-
           // Add logic to fetch more posts when the end of the feed is reached
           console.log(
             "Reached end of feed. Distance from end:",
@@ -126,7 +210,6 @@ export default function HomeScreen() {
         }}
       />
 
-      {/* Render the StoryModal when isStoryModalOpen is true */}
       {isStoryModalOpen && (
         <StoryModal
           isStoryModalOpen
@@ -134,8 +217,7 @@ export default function HomeScreen() {
           openStory={openStory}
         />
       )}
-      
-      {/* Render the CommentsModal when isCommentModalOpen is true */}
+
       {isCommentModalOpen && (
         <CommentsModal
           isCommentModalOpen
