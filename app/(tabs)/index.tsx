@@ -67,19 +67,14 @@ export default function HomeScreen() {
     isValidating,
     mutate,
   } = useSWR("/api/v1/posts", fetcher, {
-    revalidateOnReconnect: true,
+    revalidateOnReconnect: false,
     shouldRetryOnError: true,
     onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
       if (error) {
-        console.error("uyfuyy", error);
+        console.error("Error fetching posts:", error);
       }
-      console.log("is online:", config.isOnline());
-      if (config.isOnline()) {
-        revalidate({ 
-          retryCount: 5,
-         });
-      } else {
-        return;
+      if (config.isOnline() && retryCount < 5) {
+        setTimeout(() => revalidate({ retryCount }), 5000);
       }
     },
     keepPreviousData: true,
@@ -87,7 +82,8 @@ export default function HomeScreen() {
       return navigator.onLine;
     },
     refreshWhenOffline: false,
-    refreshInterval: 5 * 60 * 1000,
+    refreshInterval: 5 * 60 * 1000, // Refresh every 5 minutes
+    dedupingInterval: 5 * 60 * 1000, // Dedupe requests within 5 minutes
   });
 
   const toggleStoryModal = useCallback(
@@ -123,8 +119,8 @@ export default function HomeScreen() {
   );
 
   useEffect(() => {
-    isValidating ? setDataRefreshing(true) : setDataRefreshing(false);
-  }, [isValidating]);
+    setDataRefreshing(isValidating);
+  }, [isValidating, setDataRefreshing]);
 
   if (!posts) {
     return (

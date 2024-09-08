@@ -19,6 +19,7 @@ import { Comment } from "@/constants/Types";
 // CommentComponent: Renders a single comment with user avatar, name, and timestamp
 export const CommentComponent = memo(
   ({ item }: { item: Comment }) => {
+    // Get the current color scheme (light or dark)
     const colorScheme = useColorScheme();
     return (
       // Container for the entire comment
@@ -50,6 +51,7 @@ export const CommentComponent = memo(
                 color: Colors[colorScheme ?? "light"].textSecondary,
               }}
             >
+              {/* Generate username from user's name and display timestamp */}
               @{item.user.name.toLowerCase().replace(/\s/g, "")} ·{" "}
               {new Date(item.timestamp).toLocaleString(undefined, {
                 year: "numeric",

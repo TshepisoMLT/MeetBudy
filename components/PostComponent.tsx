@@ -133,7 +133,7 @@ export const PostComponent = memo(
                   day: "2-digit",
                   hour: "2-digit",
                   minute: "2-digit",
-                  hour12: false
+                  hour12: false,
                 })}
               </Text>
             </View>
@@ -172,7 +172,7 @@ export const PostComponent = memo(
           />
           {/* Show placeholder while image is loading */}
           {!imageLoaded && (
-            <View className="absolute inset-0 flex items-center justify-center">
+            <View className="absolute w-full h-80 rounded-lg inset-0 flex items-center justify-center">
               <Ionicons
                 name="image-outline"
                 size={48}

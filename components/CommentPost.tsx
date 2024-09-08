@@ -51,6 +51,7 @@ export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()
       <View className="flex-1 ml-2 flex-col">
         {/* User info and options */}
         <View className="flex-row justify-between items-center mb-2">
+          {/* User name and post time */}
           <View>
             <Text
               className="font-bold text-lg"
@@ -62,6 +63,7 @@ export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()
               className="text-sm text-gray-500"
               style={{ color: Colors[colorScheme ?? "light"].textSecondary }}
             >
+              {/* Format and display the post time */}
               {new Date(post.postedTime).toLocaleString(undefined, {
                 year: "numeric",
                 month: "2-digit",
@@ -85,6 +87,7 @@ export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()
 
         {/* Post caption and image */}
         <View className="space-y-3 flex-1">
+          {/* Post caption */}
           <Text
             className="text-lg font-semibold"
             style={{ color: Colors[colorScheme ?? "light"].text }}
