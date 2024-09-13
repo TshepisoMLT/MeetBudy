@@ -19,12 +19,11 @@ import { Comment } from "@/constants/Types";
 // CommentComponent: Renders a single comment with user avatar, name, and timestamp
 export const CommentComponent = memo(
   ({ item }: { item: Comment }) => {
+    // Get the current color scheme (light or dark)
     const colorScheme = useColorScheme();
     return (
-
       // Container for the entire comment
       <View className="flex flex-row border-b border-slate-600/20 p-4">
-
         {/* User avatar */}
         <Image
           source={{ uri: item.user.avatar }}
@@ -33,10 +32,8 @@ export const CommentComponent = memo(
 
         {/* Comment content container */}
         <View className="flex-1">
-
           {/* User info and timestamp */}
           <View className="flex flex-row items-center mb-1">
-
             {/* User name */}
             <Text
               style={{
@@ -54,10 +51,19 @@ export const CommentComponent = memo(
                 color: Colors[colorScheme ?? "light"].textSecondary,
               }}
             >
-              @{item.user.name.toLowerCase().replace(/\s/g, '')} · {new Date(item.timestamp).toLocaleString()}
+              {/* Generate username from user's name and display timestamp */}
+              @{item.user.name.toLowerCase().replace(/\s/g, "")} ·{" "}
+              {new Date(item.timestamp).toLocaleString(undefined, {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              })}
             </Text>
           </View>
-          
+
           {/* Comment text */}
           <Text
             className="text-base"

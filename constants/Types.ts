@@ -11,6 +11,7 @@
 /**
  * Represents a social media post.
  * @property {string} id - The unique identifier for the post.
+ * @property {string} userId - The unique identifier of the user who made the post.
  * @property {string} name - The name of the user who made the post.
  * @property {string} avatar - The avatar URL of the user who made the post.
  * @property {string} postedTime - The timestamp when the post was made.
@@ -25,6 +26,7 @@
 /**
  * Represents a story (temporary post) in a social media platform.
  * @property {string} id - The unique identifier for the story.
+ * @property {string} userId - The unique identifier of the user who posted the story.
  * @property {string} name - The name of the user who posted the story.
  * @property {string} avatar - The avatar URL of the user who posted the story.
  * @property {string} postedTime - The timestamp when the story was posted.
@@ -32,10 +34,12 @@
  * @property {string} [textOverlay] - The optional text overlay on the story image.
  */
 
+
 // Represents a comment on a post
 export type Comment = {
   id: string;
   user: {
+    userId: string;
     name: string;
     avatar: string;
   };
@@ -46,6 +50,7 @@ export type Comment = {
 // Represents a social media post
 export type Post = {
   id: string;
+  userId: string;
   name: string;
   avatar: string;
   postedTime: string;
@@ -60,6 +65,7 @@ export type Post = {
 // Represents a story (temporary post) in a social media platform
 export type Story = {
   id: string;
+  userId: string;
   name: string;
   avatar: string;
   postedTime: string;

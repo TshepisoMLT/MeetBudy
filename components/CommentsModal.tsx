@@ -99,6 +99,7 @@ export default function CommentsModal({
       const newComment: Comment = {
         id: Date.now().toString(),
         user: {
+          userId:"6",
           name: "Jack Miller",
           avatar: "https://randomuser.me/api/portraits/men/10.jpg",
         },

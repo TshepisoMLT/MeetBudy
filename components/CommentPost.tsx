@@ -30,7 +30,6 @@ export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()
   }, [liked, likeCount]);
 
   return (
-
     // Main container for the post
     <View
       className="flex flex-row border-b px-4 py-3 border-slate-600/20"
@@ -38,7 +37,6 @@ export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()
         minHeight: 350,
       }}
     >
-
       {/* User avatar section */}
       <View className="w-14 items-center h-14">
         <TouchableOpacity>
@@ -51,9 +49,9 @@ export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()
 
       {/* Post content section */}
       <View className="flex-1 ml-2 flex-col">
-
         {/* User info and options */}
         <View className="flex-row justify-between items-center mb-2">
+          {/* User name and post time */}
           <View>
             <Text
               className="font-bold text-lg"
@@ -65,7 +63,15 @@ export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()
               className="text-sm text-gray-500"
               style={{ color: Colors[colorScheme ?? "light"].textSecondary }}
             >
-              {post?.postedTime}
+              {/* Format and display the post time */}
+              {new Date(post.postedTime).toLocaleString(undefined, {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              })}
             </Text>
           </View>
 
@@ -81,6 +87,7 @@ export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()
 
         {/* Post caption and image */}
         <View className="space-y-3 flex-1">
+          {/* Post caption */}
           <Text
             className="text-lg font-semibold"
             style={{ color: Colors[colorScheme ?? "light"].text }}
@@ -100,7 +107,6 @@ export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()
 
         {/* Post interactions (like, comment, share) */}
         <View className="flex-row justify-between mt-3">
-
           {/* Like button */}
           <TouchableOpacity
             className="flex flex-row items-center space-x-1"
@@ -130,7 +136,7 @@ export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()
               {post?.comments}
             </Text>
           </TouchableOpacity>
-          
+
           {/* Share button */}
           <TouchableOpacity className="flex-row items-center space-x-2">
             <Ionicons

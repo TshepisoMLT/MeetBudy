@@ -110,10 +110,6 @@ export default function StoryModal({
         backgroundColor: Colors[colorScheme ?? "light"].background,
       }}
     >
-      {/* Set the status bar style based on the color scheme */}
-      <StatusBar
-        barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
-      />
       {/* Modal component for displaying the story */}
       <ReactNativeModal
         isVisible={isStoryModalOpen}
@@ -168,7 +164,15 @@ export default function StoryModal({
                     fontSize: 12,
                   }}
                 >
-                  {openStory && new Date(openStory.postedTime).toDateString()}
+                  {openStory &&
+                    new Date(openStory.postedTime).toLocaleString(undefined, {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })}
                 </Text>
               </View>
             </View>
