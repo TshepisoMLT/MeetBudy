@@ -30,8 +30,8 @@ MeetBudy is a cutting-edge social networking platform developed using React Nati
 * TypeScript for enhanced code quality and maintainability
 * Tailwind CSS for efficient and responsive styling
 * Expo Router for seamless navigation and deep linking
-* Redux for state management
-* Firebase for backend services and real-time database
+* Zustand for state management
+* Supabase for backend services and real-time database
 
 ## Getting Started
 

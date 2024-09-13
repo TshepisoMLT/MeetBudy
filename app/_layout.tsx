@@ -4,6 +4,7 @@
  * - Provides a consistent header style and navigation animation across the app.
  * - Includes screens for the main tab navigation, a "not found" screen, a contact screen, and a profile screen.
  */
+
 import {
   DarkTheme,
   DefaultTheme,
@@ -14,13 +15,14 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { TouchableOpacity, StatusBar } from "react-native";
+import { TouchableOpacity, StatusBar, PlatformColor } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  // Get the current color scheme (light or dark)
   const colorScheme = useColorScheme();
 
   // Load custom fonts
@@ -37,18 +39,21 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
+  // Return null or a loading indicator if fonts are not loaded yet
   if (!loaded) {
     return null; // or return a loading indicator
   }
 
   return (
+    // Provide the appropriate theme based on the color scheme
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      {/* Set the status bar style based on the color scheme */}
       <StatusBar
         barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
       />
+      {/* Set up the navigation stack with custom options */}
       <Stack
         screenOptions={{
-          headerShown: true,
           animation: "slide_from_right",
           headerStyle: {
             backgroundColor: colorScheme === "dark" ? "#1c1c1c" : "#ffffff",
@@ -77,6 +82,7 @@ export default function RootLayout() {
           options={{
             title: "Contact Us",
             headerRight: () => (
+              // Add a call icon to the header
               <TouchableOpacity
                 onPress={() => console.log("Contact Us")}
                 style={{ marginRight: 15 }}
@@ -97,6 +103,7 @@ export default function RootLayout() {
           options={{
             title: "Profile",
             headerRight: () => (
+              // Add an edit icon to the header
               <TouchableOpacity
                 onPress={() => console.log("Edit Profile")}
                 style={{ marginRight: 15 }}
@@ -108,6 +115,7 @@ export default function RootLayout() {
                 />
               </TouchableOpacity>
             ),
+            animation: "slide_from_left",
           }}
         />
       </Stack>

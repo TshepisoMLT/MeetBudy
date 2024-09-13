@@ -127,7 +127,14 @@ export const PostComponent = memo(
                 className="text-xs"
                 style={{ color: Colors[colorScheme ?? "light"].textSecondary }}
               >
-                {item.postedTime}
+                {new Date(item.postedTime).toLocaleString(undefined, {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                })}
               </Text>
             </View>
           </View>
@@ -165,7 +172,7 @@ export const PostComponent = memo(
           />
           {/* Show placeholder while image is loading */}
           {!imageLoaded && (
-            <View className="absolute inset-0 flex items-center justify-center">
+            <View className="absolute w-full h-80 rounded-lg inset-0 flex items-center justify-center">
               <Ionicons
                 name="image-outline"
                 size={48}
@@ -210,6 +217,28 @@ export const PostComponent = memo(
               style={{ color: Colors[colorScheme ?? "light"].text }}
             >
               {commentCount}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Bookmark button */}
+          <TouchableOpacity
+            onPress={handleShare}
+            className="flex flex-row items-center space-x-1"
+          >
+            <Ionicons
+              name={isShared ? "bookmark" : "arrow-redo-outline"}
+              size={22}
+              color={
+                isShared
+                  ? Colors[colorScheme ?? "light"].tint
+                  : Colors[colorScheme ?? "light"].text
+              }
+            />
+            <Text
+              className="font-semibold"
+              style={{ color: Colors[colorScheme ?? "light"].text }}
+            >
+              {shareCount}
             </Text>
           </TouchableOpacity>
 
