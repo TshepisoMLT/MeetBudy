@@ -110,10 +110,6 @@ export default function StoryModal({
         backgroundColor: Colors[colorScheme ?? "light"].background,
       }}
     >
-      {/* Set the status bar style based on the color scheme */}
-      <StatusBar
-        barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
-      />
       {/* Modal component for displaying the story */}
       <ReactNativeModal
         isVisible={isStoryModalOpen}
