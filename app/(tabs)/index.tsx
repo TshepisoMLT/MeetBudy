@@ -1,10 +1,8 @@
 /**
  * The main component for the Home screen, which displays a feed of posts and stories.
- * It manages the state of various modals (story modal, comment modal) and the refresh status.
- * The component uses a FlatList to render the posts and a custom ItemLayout function to optimize the layout.
- * It also includes a StoriesComponent at the top of the feed and handles the toggling of the story and comment modals.
+ * It uses the SWR library to fetch and manage the posts data, and provides functionality
+ * to open modals for viewing stories and comments.
  */
-
 import {
   View,
   StatusBar,
@@ -14,6 +12,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
+  ToastAndroid,
 } from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
@@ -29,6 +28,10 @@ import useSWR from "swr";
 import { getPosts } from "@/utils/home/getPosts";
 import { NetworkError } from "@/utils/home/getPosts";
 import { useHomeStore } from "@/stores/homeStore";
+import UploadStoryModal from "@/components/UploadModal";
+import { useUploadStore } from "@/stores/UploadStore";
+import UploadPostModal from "@/components/uploadPostModal";
+import UploadStatusModal from "@/components/uploadStoryModal";
 
 // Function to calculate the layout for each item in the FlatList
 const ItemLayout = (data: any, index: number) => ({
@@ -37,35 +40,79 @@ const ItemLayout = (data: any, index: number) => ({
   index,
 });
 
+// Interface for the response from the posts API
+interface PostResponse {
+  message: string;
+  status: number;
+  posts?: Post[];
+  cause?: Error | any;
+  name?: string;
+  request?: any;
+  response?: any;
+  stack?: string;
+  isError: boolean;
+}
+
 // Fetcher function for SWR
-const fetcher = async () => {
+const fetcher = async (): Promise<PostResponse> => {
   try {
-    return await getPosts("http://192.168.41.164:8000/api/v1/posts");
+    // Fetch posts from the API
+    const data = await getPosts("http://192.168.40.112:8000/api/v1/posts");
+    return data;
   } catch (error) {
+    // Handle network errors
     if (error instanceof NetworkError) {
-      throw new Error(
-        "Network error. Please check your connection and try again."
-      );
+      return {
+        message: "Network error. Please check your connection and try again.",
+        status: 0,
+        isError: true,
+      };
     } else {
-      throw new Error("An unexpected error occurred. Please try again later.");
+      // Handle other unexpected errors
+      return {
+        message: "An unexpected error occurred. Please try again later.",
+        status: 0,
+        isError: true,
+      };
     }
   }
 };
 
 // Main component for the Home screen
 export default function HomeScreen() {
+  // Get the current color scheme
   const colorScheme = useColorScheme();
+  
+  // Extract story-related state and functions from the story store
   const { isStoryModalOpen, setIsStoryModalOpen, openStory, setOpenStory } =
     useStoryStore();
+  
+  // Extract comment-related state and functions from the comment store
   const { isCommentModalOpen, setIsCommentModalOpen, post, setPost } =
     useCommentStore();
+  
+  // Extract data refreshing function from the home store
   const { setDataRefreshing } = useHomeStore();
+  
+  // Extract upload-related state from the upload store
+  const { isUploadModalOpen, isPostingPost, isPostingStory } = useUploadStore();
 
+  // Function to show a toast message
+  const showToast = (message: string) => {
+    ToastAndroid.showWithGravity(
+      message,
+      ToastAndroid.SHORT,
+      ToastAndroid.BOTTOM
+    );
+  };
+
+  // Use SWR hook to fetch and manage posts data
   const {
-    data: posts,
-    error,
+    data: response,
     isValidating,
     mutate,
+    error,
+    isLoading,
   } = useSWR("/api/v1/posts", fetcher, {
     revalidateOnReconnect: false,
     shouldRetryOnError: true,
@@ -74,18 +121,25 @@ export default function HomeScreen() {
         console.error("Error fetching posts:", error);
       }
       if (config.isOnline() && retryCount < 5) {
-        setTimeout(() => revalidate({ retryCount }), 5000);
+        setTimeout(() => {
+          revalidate({ retryCount });
+          retryCount++;
+        }, 5000);
       }
     },
     keepPreviousData: true,
-    isOnline() {
-      return navigator.onLine;
-    },
     refreshWhenOffline: false,
     refreshInterval: 5 * 60 * 1000, // Refresh every 5 minutes
     dedupingInterval: 5 * 60 * 1000, // Dedupe requests within 5 minutes
+    onSuccess: () => {
+      setDataRefreshing(false);
+    },
   });
 
+  // Destructure the response data
+  const { posts, message, isError } = response || {};
+
+  // Function to toggle the story modal
   const toggleStoryModal = useCallback(
     (story: Story | null) => {
       setIsStoryModalOpen(!isStoryModalOpen);
@@ -94,6 +148,7 @@ export default function HomeScreen() {
     [isStoryModalOpen, setIsStoryModalOpen, setOpenStory]
   );
 
+  // Function to toggle the comment modal
   const toggleCommentModal = useCallback(
     (post: Post | null) => {
       setIsCommentModalOpen(!isCommentModalOpen);
@@ -102,10 +157,12 @@ export default function HomeScreen() {
     [isCommentModalOpen, setIsCommentModalOpen, setPost]
   );
 
+  // Function to handle refresh
   const onRefresh = useCallback(() => {
     mutate();
   }, [mutate]);
 
+  // Function to render each post item
   const renderItem = useCallback(
     ({ item }: { item: Post }) => (
       <PostComponent item={item} toggleCommentModal={toggleCommentModal} />
@@ -113,16 +170,32 @@ export default function HomeScreen() {
     [toggleCommentModal]
   );
 
+  // Memoized header component for the FlatList
   const ListHeaderComponent = useMemo(
     () => <StoriesComponent toggleStoryModal={toggleStoryModal} />,
     [toggleStoryModal]
   );
 
+  // Effect to update data refreshing state
   useEffect(() => {
     setDataRefreshing(isValidating);
   }, [isValidating, setDataRefreshing]);
 
-  if (!posts) {
+  // Render loading state
+  if (isLoading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator
+          size="large"
+          color={Colors[colorScheme ?? "light"].tint}
+        />
+      </View>
+    );
+  }
+
+  // Render error state
+  if (isError || error) {
+    showToast(message || "Error, please try again later");
     return (
       <View
         style={{
@@ -131,7 +204,9 @@ export default function HomeScreen() {
         }}
         className="flex-1 justify-center items-center"
       >
-        <Text className="text-red-500 mb-4">{error?.message}</Text>
+        <Text className="text-red-500 mb-4">
+          {message || "Error, please try again later"}
+        </Text>
         <Image
           source={{
             uri: "https://ouch-cdn2.icons8.com/uORZYvKIb8zcJIkQLEFsDguz7YjYruZWslRmb3bwWGs/rs:fit:368:368/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9zdmcvNzkz/LzMwZDliN2ZhLThi/N2MtNDBhOS1hN2Y2/LTBlODBmZGFlYzk2/ZC5zdmc.png",
@@ -155,17 +230,7 @@ export default function HomeScreen() {
     );
   }
 
-  if (!posts) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator
-          size="large"
-          color={Colors[colorScheme ?? "light"].tint}
-        />
-      </View>
-    );
-  }
-
+  // Render main content
   return (
     <View
       style={{
@@ -173,10 +238,12 @@ export default function HomeScreen() {
         backgroundColor: Colors[colorScheme ?? "light"].background,
       }}
     >
+      {/* Set status bar style based on color scheme */}
       <StatusBar
         barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
       />
 
+      {/* FlatList to render posts */}
       <FlatList
         ListHeaderComponent={ListHeaderComponent}
         data={posts}
@@ -194,9 +261,9 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 10 }}
         ItemSeparatorComponent={() => <View className="h-2" />}
-        getItemLayout={ItemLayout}
+        // getItemLayout={ItemLayout}
         initialNumToRender={10}
-        onEndReachedThreshold={0.8}
+        onEndReachedThreshold={2}
         onEndReached={({ distanceFromEnd }) => {
           // Add logic to fetch more posts when the end of the feed is reached
           console.log(
@@ -204,8 +271,19 @@ export default function HomeScreen() {
             distanceFromEnd
           );
         }}
+        ListEmptyComponent={() => (
+          <View>
+            <Text>Loading</Text>
+          </View>
+        )}
+        ListFooterComponent={() => (
+          <View>
+            <Text>Loading more</Text>
+          </View>
+        )}
       />
 
+      {/* Render StoryModal when isStoryModalOpen is true */}
       {isStoryModalOpen && (
         <StoryModal
           isStoryModalOpen
@@ -214,6 +292,7 @@ export default function HomeScreen() {
         />
       )}
 
+      {/* Render CommentsModal when isCommentModalOpen is true */}
       {isCommentModalOpen && (
         <CommentsModal
           isCommentModalOpen
@@ -221,6 +300,15 @@ export default function HomeScreen() {
           post={post}
         />
       )}
+
+      {/* Render UploadStoryModal when isUploadModalOpen is true */}
+      {isUploadModalOpen && <UploadStoryModal />}
+
+      {/* Render UploadPostModal when isPostingPost is true */}
+      {isPostingPost && <UploadPostModal />}
+
+      {/* Render UploadStatusModal when isPostingStory is true */}
+      {isPostingStory && <UploadStatusModal />}
     </View>
   );
 }

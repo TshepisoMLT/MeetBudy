@@ -220,6 +220,28 @@ export const PostComponent = memo(
             </Text>
           </TouchableOpacity>
 
+          {/* Bookmark button */}
+          <TouchableOpacity
+            onPress={handleShare}
+            className="flex flex-row items-center space-x-1"
+          >
+            <Ionicons
+              name={isShared ? "bookmark" : "arrow-redo-outline"}
+              size={22}
+              color={
+                isShared
+                  ? Colors[colorScheme ?? "light"].tint
+                  : Colors[colorScheme ?? "light"].text
+              }
+            />
+            <Text
+              className="font-semibold"
+              style={{ color: Colors[colorScheme ?? "light"].text }}
+            >
+              {shareCount}
+            </Text>
+          </TouchableOpacity>
+
           {/* Share button */}
           <TouchableOpacity
             onPress={handleShare}

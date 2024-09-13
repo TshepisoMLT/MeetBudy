@@ -7,7 +7,7 @@
  * @throws {Error} If the API response contains invalid data.
  */
 import { Post } from "@/constants/Types";
-import axios, { AxiosError } from "axios";
+import axios, { Axios, AxiosError } from "axios";
 
 /**
  * Fetches posts from a given URL.
@@ -21,18 +21,40 @@ import axios, { AxiosError } from "axios";
 export class NetworkError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'NetworkError';
+    this.name = "NetworkError";
   }
 }
 
-export async function getPosts(url: string): Promise<Post[]> {
+interface PostResponse {
+  message: string;
+  status: number;
+  isError: boolean;
+  posts?: Post[];
+  cause?: Error | any;
+  name?: string;
+  request?: any;
+  response?: any;
+  stack?: string;
+}
+
+export async function getPosts(url: string): Promise<PostResponse> {
   try {
     // Make a GET request to the specified URL
-    const response = await axios.get<{ posts: Post[] }>(url);
+    const response = await axios.get<{ posts: Post[] }>(url, {
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "test-key",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
 
     // Check if the response data is valid
     if (!response.data || !Array.isArray(response.data.posts)) {
-      throw new Error("Invalid response data");
+      return {
+        message: "Invalid response data",
+        status: 500,
+        isError: true,
+      };
     }
 
     // Process the fetched posts
@@ -47,30 +69,66 @@ export async function getPosts(url: string): Promise<Post[]> {
         timestamp: new Date(comment.timestamp).toISOString(),
       })),
     }));
-
-    return processedPosts;
+    return {
+      message: "success",
+      status: 200,
+      posts: processedPosts,
+      isError: false,
+    };
   } catch (error: unknown) {
     // Handle Axios errors
     if (axios.isAxiosError(error)) {
       const axiosError = error;
-      console.error("API Request Failed:");
-      console.error(`Message: ${axiosError?.message}`);
       if (axiosError.response) {
         // Log response status and data for server errors
+        console.error(`Status Code: ${axiosError.response.status}`);
         console.error(`Status: ${axiosError.response.status}`);
         console.error(`Data: ${JSON.stringify(axiosError.response.data)}`);
+        return {
+          message: axiosError.message,
+          status: parseInt(axiosError?.code || "500", 10),
+          cause: axiosError?.cause,
+          name: axiosError.name,
+          request: axiosError.request,
+          response: axiosError.response,
+          stack: axiosError.stack,
+          isError: true,
+        };
       } else if (axiosError.request) {
-        // Log network errors
-        console.error("ERROR  Message: Network Error");
+        return {
+          message: axiosError.message,
+          status: parseInt(axiosError?.code || "500", 10),
+          cause: axiosError?.cause,
+          name: axiosError.name,
+          request: axiosError.request,
+          response: axiosError.response,
+          stack: axiosError.stack,
+          isError: true,
+        };
       }
-    } else if (error instanceof Error && !('response' in error)) {
+    } else if (error instanceof Error && !("response" in error)) {
       // Throw custom NetworkError for non-Axios network errors
-      throw new NetworkError('Network Error: Unable to connect to the server');
+      return {
+        message: error.message,
+        status: 400,
+        cause: error.cause,
+        name: error.name,
+        stack: error.stack,
+        isError: true,
+      };
     } else {
       // Log unexpected errors
-      console.error("Unexpected Error:", error instanceof Error ? error : String(error));
+      return {
+        message: "An unexpected error occurred. Please try again later.",
+        status: 400,
+        isError: true,
+      };
     }
     // Re-throw the error to be handled by the caller
-    throw error;
+    return {
+      message: "An unexpected error occurred. Please try again later.",
+      status: 400,
+      isError: true,
+    };
   }
 }
