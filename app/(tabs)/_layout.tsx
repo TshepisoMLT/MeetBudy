@@ -11,7 +11,7 @@ import { router, Tabs } from "expo-router";
 import React from "react";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Image, TouchableOpacity } from "react-native";
+import { Image, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 // Define the TabLayout component
@@ -68,18 +68,33 @@ export default function TabLayout() {
           ),
           // Define the header right component (settings icon)
           headerRight: () => (
-            <TouchableOpacity
-              // Navigate to contact screen on press
-              onPress={() => router.push("/contact")}
-              className="mr-4 rounded-full p-2"
-            >
-              <Ionicons
-                name="settings-outline"
-                // Set the color based on the color scheme
-                color={Colors[colorScheme ?? "light"].tint}
-                size={28}
-              />
-            </TouchableOpacity>
+            <View className="mr-4 rounded-full flex flex-row ">
+              <TouchableOpacity
+                // Navigate to contact screen on press
+                onPress={() => router.push("/messages")}
+                className="rounded-full p-2"
+              >
+                <Ionicons
+                  name="chatbubble-outline"
+                  // Set the color based on the color scheme
+                  color={Colors[colorScheme ?? "light"].tint}
+                  size={28}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                // Navigate to contact screen on press
+
+                onPress={() => router.push("/settings")}
+                className="rounded-full  p-2"
+              >
+                <Ionicons
+                  name="settings-outline"
+                  // Set the color based on the color scheme
+                  color={Colors[colorScheme ?? "light"].tint}
+                  size={28}
+                />
+              </TouchableOpacity>
+            </View>
           ),
           // Set the header title
           headerTitle: "MeetBudy",
