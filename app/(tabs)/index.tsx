@@ -31,6 +31,7 @@ import UploadStoryModal from "@/components/UploadModal";
 import { useUploadStore } from "@/stores/UploadStore";
 import UploadPostModal from "@/components/uploadPostModal";
 import UploadStatusModal from "@/components/uploadStoryModal";
+import React from "react";
 
 // Function to calculate the layout for each item in the FlatList
 const ItemLayout = (data: any, index: number) => ({
@@ -76,6 +77,17 @@ const fetcher = async (): Promise<PostResponse> => {
     }
   }
 };
+
+// Optimized PostItem component
+const PostItem = React.memo(
+  ({
+    item,
+    toggleCommentModal,
+  }: {
+    item: Post;
+    toggleCommentModal: (post: Post | null) => void;
+  }) => <PostComponent item={item} toggleCommentModal={toggleCommentModal} />
+);
 
 // Main component for the Home screen
 export default function HomeScreen() {
@@ -164,7 +176,7 @@ export default function HomeScreen() {
   // Function to render each post item
   const renderItem = useCallback(
     ({ item }: { item: Post }) => (
-      <PostComponent item={item} toggleCommentModal={toggleCommentModal} />
+      <PostItem item={item} toggleCommentModal={toggleCommentModal} />
     ),
     [toggleCommentModal]
   );

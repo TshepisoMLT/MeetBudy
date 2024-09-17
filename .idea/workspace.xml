@@ -5,26 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="05991203-619d-4ec9-92f5-12401b13660a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/_layout.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/no-internet.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/no-internet.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/settings.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/settings.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CommentComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/CommentComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CommentPost.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/CommentPost.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CommentsModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/CommentsModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/MessageComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MessageComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/MessageModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/MessageModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/PostComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/PostComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/StoriesContainer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/StoriesContainer.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/StoryModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/StoryModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/UploadModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/UploadModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/UploadStoryModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/UploadStoryModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/uploadPostModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/uploadPostModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/stores/homeStore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/stores/homeStore.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
