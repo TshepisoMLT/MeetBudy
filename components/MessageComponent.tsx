@@ -1,8 +1,8 @@
 import React from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
+import { useHomeStore } from "@/stores/homeStore";
 
 type Message = {
   id: string;
@@ -13,7 +13,7 @@ type Message = {
 
 const MessageComponent = ({ message }: { message: Message }) => {
   const isUserMessage = message.sender.toLowerCase() === "user";
-  const colorScheme = useColorScheme();
+  const { MB_Preferred_Theme } = useHomeStore();
   return (
     <View
       className={`max-w-[80%] my-2 p-3 rounded-2xl ${
@@ -44,7 +44,7 @@ const MessageComponent = ({ message }: { message: Message }) => {
           <Ionicons
             name="checkmark-done"
             size={16}
-            color={Colors[colorScheme ?? "light"].accent}
+            color={Colors[MB_Preferred_Theme ?? "light"].accent}
           />
         )}
       </View>

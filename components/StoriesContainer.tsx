@@ -13,14 +13,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { getStories, NetworkError } from "@/utils/home/getStories";
 import { Story } from "@/constants/Types";
 import useSWR from "swr";
 import { useHomeStore } from "@/stores/homeStore";
 import { Ionicons } from "@expo/vector-icons";
-import {useUploadStore} from "@/stores/UploadStore";
+import { useUploadStore } from "@/stores/UploadStore";
 
 interface StoriesResponse {
   message: string;
@@ -65,9 +64,8 @@ export const StoriesComponent = memo(
     toggleStoryModal: (value: Story | null) => void;
   }) => {
     // Get the current color scheme (light or dark mode)
-    const colorScheme = useColorScheme();
-    const { setIsUploadModalOpen, isUploadModalOpen } =
-      useUploadStore();
+    const { setIsUploadModalOpen, isUploadModalOpen } = useUploadStore();
+    const { MB_Preferred_Theme } = useHomeStore();
 
     // Get the dataRefreshing state from the home store
     const { dataRefreshing } = useHomeStore();
@@ -106,7 +104,7 @@ export const StoriesComponent = memo(
 
     const handleUploadClick = () => {
       setIsUploadModalOpen(!isUploadModalOpen);
-    }
+    };
 
     const { stories, message, status, isError } = response || {};
 
@@ -124,7 +122,7 @@ export const StoriesComponent = memo(
         <View
           style={{
             flex: 1,
-            backgroundColor: Colors[colorScheme ?? "light"].background,
+            backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
           }}
           className="flex-1 justify-center items-center"
         >
@@ -139,7 +137,7 @@ export const StoriesComponent = memo(
           >
             <Text
               style={{
-                color: Colors[colorScheme ?? "light"].text,
+                color: Colors[MB_Preferred_Theme ?? "light"].text,
               }}
               className="text-white text-lg"
             >
@@ -157,7 +155,7 @@ export const StoriesComponent = memo(
         {/* <View className="w-full h-20 bg-red-500"></View> */}
         <Text
           className="text-lg font-bold mb-2 px-4"
-          style={{ color: Colors[colorScheme ?? "light"].text }}
+          style={{ color: Colors[MB_Preferred_Theme ?? "light"].text }}
         >
           Stories
         </Text>
@@ -186,7 +184,7 @@ export const StoriesComponent = memo(
                 <View
                   className="absolute bottom-1 right-0 rounded-full"
                   style={{
-                    backgroundColor: Colors[colorScheme ?? "light"].tint,
+                    backgroundColor: Colors[MB_Preferred_Theme ?? "light"].tint,
                   }}
                 >
                   <Ionicons name="add-outline" size={28} color="white" />
@@ -195,7 +193,7 @@ export const StoriesComponent = memo(
               <Text
                 className="text-center text-xs"
                 style={{
-                  color: Colors[colorScheme ?? "light"].text,
+                  color: Colors[MB_Preferred_Theme ?? "light"].text,
                 }}
                 numberOfLines={1}
               >
@@ -215,7 +213,7 @@ export const StoriesComponent = memo(
                 style={{
                   borderRadius: 40,
                   borderWidth: 2,
-                  borderColor: Colors[colorScheme ?? "light"].tint,
+                  borderColor: Colors[MB_Preferred_Theme ?? "light"].tint,
                 }}
               >
                 {/* Story avatar image */}
@@ -226,7 +224,8 @@ export const StoriesComponent = memo(
                     height: 72,
                     borderRadius: 36,
                     borderWidth: 3,
-                    borderColor: Colors[colorScheme ?? "light"].background,
+                    borderColor:
+                      Colors[MB_Preferred_Theme ?? "light"].background,
                   }}
                 />
               </View>
@@ -234,7 +233,7 @@ export const StoriesComponent = memo(
               <Text
                 className="text-center text-xs"
                 style={{
-                  color: Colors[colorScheme ?? "light"].text,
+                  color: Colors[MB_Preferred_Theme ?? "light"].text,
                 }}
                 numberOfLines={1}
               >

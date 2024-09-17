@@ -13,8 +13,8 @@ import { create } from "zustand";
 interface HomeState {
   dataRefreshing: boolean;
   setDataRefreshing: (value: boolean) => void;
-  MB_Preferred_Theme: string;
-  setMB_Preferred_Theme: (value: string) => void;
+  MB_Preferred_Theme: "dark" | "light";
+  setMB_Preferred_Theme: (value: "dark" | "light") => void;
 }
 
 // Create and export the useHomeStore hook

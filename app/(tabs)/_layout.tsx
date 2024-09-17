@@ -10,25 +10,24 @@
 import { router, Tabs } from "expo-router";
 import React from "react";
 import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Image, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useHomeStore } from "@/stores/homeStore";
 
 // Define the TabLayout component
 export default function TabLayout() {
   // Get the current color scheme
-  const colorScheme = useColorScheme();
-
+  const { MB_Preferred_Theme } = useHomeStore();
   return (
     <Tabs
       screenOptions={{
         // Set the active tab color based on the color scheme
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        tabBarActiveTintColor: Colors[MB_Preferred_Theme ?? "light"].tint,
         // Show the header
         headerShown: true,
         // Set the header style
         headerStyle: {
-          backgroundColor: Colors[colorScheme ?? "light"].background,
+          backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
         },
         // Show header shadow
         headerShadowVisible: true,
@@ -45,7 +44,7 @@ export default function TabLayout() {
           title: "Home",
           // Set the header style for this specific screen
           headerStyle: {
-            backgroundColor: Colors[colorScheme ?? "light"].background,
+            backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
             height: 100,
           },
           // Show the header
@@ -77,7 +76,7 @@ export default function TabLayout() {
                 <Ionicons
                   name="chatbubble-outline"
                   // Set the color based on the color scheme
-                  color={Colors[colorScheme ?? "light"].tint}
+                  color={Colors[MB_Preferred_Theme ?? "light"].tint}
                   size={28}
                 />
               </TouchableOpacity>
@@ -90,7 +89,7 @@ export default function TabLayout() {
                 <Ionicons
                   name="settings-outline"
                   // Set the color based on the color scheme
-                  color={Colors[colorScheme ?? "light"].tint}
+                  color={Colors[MB_Preferred_Theme ?? "light"].tint}
                   size={28}
                 />
               </TouchableOpacity>
@@ -105,7 +104,7 @@ export default function TabLayout() {
             fontWeight: "bold",
             fontSize: 24,
             // Set the color based on the color scheme
-            color: Colors[colorScheme ?? "light"].tint.toString(),
+            color: Colors[MB_Preferred_Theme ?? "light"].tint.toString(),
           },
         }}
       />

@@ -42,9 +42,7 @@ export default function NotFound() {
         href="/"
         className="bg-blue-500 px-6 py-3 rounded-lg shadow-md active:bg-blue-600"
       >
-        <Text className="text-white font-semibold text-lg">
-          Refresh
-        </Text>
+        <Text className="text-white font-semibold text-lg">Refresh</Text>
       </Link>
 
       {/* Support section */}
@@ -52,7 +50,7 @@ export default function NotFound() {
         <Text className="text-sm text-gray-500 mb-2">Need assistance?</Text>
 
         {/* Link to contact support */}
-        <Link href="/contact" className="text-blue-500 font-medium">
+        <Link href="/settings" className="text-blue-500 font-medium">
           Contact Support
         </Link>
       </View>

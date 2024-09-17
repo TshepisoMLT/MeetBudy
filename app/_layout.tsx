@@ -18,8 +18,9 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { TouchableOpacity, StatusBar, PlatformColor } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
-import { MMKVLoader } from "react-native-mmkv-storage";
 import { useHomeStore } from "@/stores/homeStore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Appearance } from "react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -27,8 +28,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   // Get the current color scheme (light or dark)
   const colorScheme = useColorScheme();
-  const MMKV = new MMKVLoader().initialize();
-  const { MB_Preferred_Theme, setMB_Preferred_Theme } = useHomeStore();
+  const { setMB_Preferred_Theme } = useHomeStore();
 
   // Load custom fonts
   const [loaded, error] = useFonts({
@@ -44,23 +44,35 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  useEffect(() => {
-    const getPreferredTheme = async () => {
-      const theme = await MMKV.getString("MB_Preferred_Theme");
-
+  const getPreferredTheme = async () => {
+    try {
+      const theme = await AsyncStorage.getItem("MB_Preferred_Theme");
+      console.log("Stored theme: ", theme);
       if (theme === "dark" || theme === "light") {
-        return;
+        setMB_Preferred_Theme(theme);
+        return true;
       }
-      MMKV.setString(
-        "MB_Preferred_Theme",
-        colorScheme === "dark" ? "dark" : "light"
-      );
       setMB_Preferred_Theme(colorScheme === "dark" ? "dark" : "light");
-      return;
-    };
+      return false;
+    } catch (error) {
+      console.error("Error reading theme from AsyncStorage:", error);
+      setMB_Preferred_Theme(colorScheme === "dark" ? "dark" : "light");
+      return false;
+    }
+  };
 
-    getPreferredTheme();
-  }, [loaded]);
+  useEffect(() => {
+    const subscription = Appearance.addChangeListener(
+      async ({ colorScheme }) => {
+        const hasTheme = await getPreferredTheme();
+        if (colorScheme && !hasTheme) {
+          setMB_Preferred_Theme(colorScheme === "dark" ? "dark" : "light");
+        }
+      }
+    );
+
+    return () => subscription.remove();
+  }, []);
 
   // Return null or a loading indicator if fonts are not loaded yet
   if (!loaded) {

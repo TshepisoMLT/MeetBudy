@@ -25,7 +25,6 @@ import {
   Keyboard,
   Animated,
 } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -34,6 +33,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { CommentComponent } from "./CommentComponent";
 import { Comment, Post } from "@/constants/Types";
 import { CommentPost } from "./CommentPost";
+import { useHomeStore } from "@/stores/homeStore";
 
 // Define the props for the CommentsModal component
 type CommentsModalProps = {
@@ -48,19 +48,19 @@ export default function CommentsModal({
   post,
 }: CommentsModalProps) {
   // Get the current color scheme (light/dark mode)
-  const colorScheme = useColorScheme();
-  
+  const { MB_Preferred_Theme } = useHomeStore();
+
   // State for managing comments, image loading, and new comment text
   const [comments, setComments] = useState<Comment[]>(post?.commentList ?? []);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [newCommentText, setNewCommentText] = useState("");
-  
+
   // Reference to the FlatList for scrolling
   const flatListRef = useRef<FlatList<Comment>>(null);
-  
+
   // State to store the reply text
   const [replyText, setReplyText] = useState("");
-  
+
   // If there's no post, close the modal and return null
   if (!post) {
     toggleCommentModal(null);
@@ -99,7 +99,7 @@ export default function CommentsModal({
       const newComment: Comment = {
         id: Date.now().toString(),
         user: {
-          userId:"6",
+          userId: "6",
           name: "Jack Miller",
           avatar: "https://randomuser.me/api/portraits/men/10.jpg",
         },
@@ -134,7 +134,7 @@ export default function CommentsModal({
           >
             <ActivityIndicator
               size="large"
-              color={Colors[colorScheme ?? "light"].text}
+              color={Colors[MB_Preferred_Theme ?? "light"].text}
             />
           </View>
         )}
@@ -148,12 +148,14 @@ export default function CommentsModal({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: Colors[colorScheme ?? "light"].background,
+        backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
       }}
     >
       {/* Set the status bar style based on the color scheme */}
       <StatusBar
-        barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
+        barStyle={
+          MB_Preferred_Theme === "dark" ? "light-content" : "dark-content"
+        }
       />
       {/* Modal component for displaying comments */}
       <ReactNativeModal
@@ -165,7 +167,7 @@ export default function CommentsModal({
         onBackdropPress={() => toggleCommentModal(null)}
         onBackButtonPress={() => toggleCommentModal(null)}
         style={{
-          backgroundColor: Colors[colorScheme ?? "light"].background,
+          backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
           flex: 1,
           margin: 0,
           padding: 0,
@@ -174,26 +176,26 @@ export default function CommentsModal({
         <View
           style={{
             flex: 1,
-            backgroundColor: Colors[colorScheme ?? "light"].background,
+            backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
           }}
         >
           {/* Header section with back button and post title */}
           <View
             className="flex flex-row items-center justify-start h-14 w-full border-b border-slate-600/20 px-4"
             style={{
-              backgroundColor: Colors[colorScheme ?? "light"].background,
+              backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
             }}
           >
             <TouchableOpacity onPress={() => toggleCommentModal(null)}>
               <Ionicons
                 name="arrow-back"
                 size={24}
-                color={Colors[colorScheme ?? "light"].text}
+                color={Colors[MB_Preferred_Theme ?? "light"].text}
               />
             </TouchableOpacity>
             <Text
               className="text-lg font-extrabold pr-6 flex-1 text-center"
-              style={{ color: Colors[colorScheme ?? "light"].text }}
+              style={{ color: Colors[MB_Preferred_Theme ?? "light"].text }}
             >
               {post?.name}'s post
             </Text>
@@ -226,7 +228,7 @@ export default function CommentsModal({
           <View
             style={{
               flexDirection: "row",
-              backgroundColor: Colors[colorScheme ?? "light"].background,
+              backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
               minHeight: 70,
             }}
             className=" items-center flex flex-row px-3 border-t border-slate-600/30"
@@ -234,15 +236,15 @@ export default function CommentsModal({
             <TextInput
               style={{
                 flex: 1,
-                borderColor: Colors[colorScheme ?? "light"].text,
+                borderColor: Colors[MB_Preferred_Theme ?? "light"].text,
                 borderWidth: 1,
                 borderRadius: 20,
                 padding: 8,
-                color: Colors[colorScheme ?? "light"].text,
+                color: Colors[MB_Preferred_Theme ?? "light"].text,
               }}
               className="bg-slate-500/30"
               placeholder={`Reply to ${post.name}'s post...`}
-              placeholderTextColor={Colors[colorScheme ?? "light"].text}
+              placeholderTextColor={Colors[MB_Preferred_Theme ?? "light"].text}
               value={replyText}
               onChangeText={setReplyText}
             />
@@ -254,7 +256,7 @@ export default function CommentsModal({
               <Ionicons
                 name="send"
                 size={24}
-                color={Colors[colorScheme ?? "light"].text}
+                color={Colors[MB_Preferred_Theme ?? "light"].text}
               />
             </TouchableOpacity>
           </View>

@@ -14,7 +14,6 @@ import {
   Image,
   ToastAndroid,
 } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { useCallback, useEffect, useMemo } from "react";
 import StoryModal from "@/components/StoryModal";
@@ -81,19 +80,19 @@ const fetcher = async (): Promise<PostResponse> => {
 // Main component for the Home screen
 export default function HomeScreen() {
   // Get the current color scheme
-  const colorScheme = useColorScheme();
-  
+  const { MB_Preferred_Theme } = useHomeStore();
+
   // Extract story-related state and functions from the story store
   const { isStoryModalOpen, setIsStoryModalOpen, openStory, setOpenStory } =
     useStoryStore();
-  
+
   // Extract comment-related state and functions from the comment store
   const { isCommentModalOpen, setIsCommentModalOpen, post, setPost } =
     useCommentStore();
-  
+
   // Extract data refreshing function from the home store
   const { setDataRefreshing } = useHomeStore();
-  
+
   // Extract upload-related state from the upload store
   const { isUploadModalOpen, isPostingPost, isPostingStory } = useUploadStore();
 
@@ -187,7 +186,7 @@ export default function HomeScreen() {
       <View className="flex-1 justify-center items-center">
         <ActivityIndicator
           size="large"
-          color={Colors[colorScheme ?? "light"].tint}
+          color={Colors[MB_Preferred_Theme ?? "light"].tint}
         />
       </View>
     );
@@ -200,7 +199,7 @@ export default function HomeScreen() {
       <View
         style={{
           flex: 1,
-          backgroundColor: Colors[colorScheme ?? "light"].background,
+          backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
         }}
         className="flex-1 justify-center items-center"
       >
@@ -219,7 +218,7 @@ export default function HomeScreen() {
         >
           <Text
             style={{
-              color: Colors[colorScheme ?? "light"].text,
+              color: Colors[MB_Preferred_Theme ?? "light"].text,
             }}
             className="text-white text-lg"
           >
@@ -235,12 +234,14 @@ export default function HomeScreen() {
     <View
       style={{
         flex: 1,
-        backgroundColor: Colors[colorScheme ?? "light"].background,
+        backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
       }}
     >
       {/* Set status bar style based on color scheme */}
       <StatusBar
-        barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
+        barStyle={
+          MB_Preferred_Theme === "dark" ? "light-content" : "dark-content"
+        }
       />
 
       {/* FlatList to render posts */}
@@ -253,9 +254,11 @@ export default function HomeScreen() {
           <RefreshControl
             refreshing={isValidating}
             onRefresh={onRefresh}
-            colors={[Colors[colorScheme ?? "light"].tint]}
-            tintColor={Colors[colorScheme ?? "light"].tint}
-            progressBackgroundColor={Colors[colorScheme ?? "light"].background}
+            colors={[Colors[MB_Preferred_Theme ?? "light"].tint]}
+            tintColor={Colors[MB_Preferred_Theme ?? "light"].tint}
+            progressBackgroundColor={
+              Colors[MB_Preferred_Theme ?? "light"].background
+            }
           />
         }
         showsVerticalScrollIndicator={false}

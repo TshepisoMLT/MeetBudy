@@ -12,69 +12,66 @@
 
 import { memo } from "react";
 import { Image, Text, View } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { Comment } from "@/constants/Types";
+import { useHomeStore } from "@/stores/homeStore";
 
 // CommentComponent: Renders a single comment with user avatar, name, and timestamp
-export const CommentComponent = memo(
-  ({ item }: { item: Comment }) => {
-    // Get the current color scheme (light or dark)
-    const colorScheme = useColorScheme();
-    return (
-      // Container for the entire comment
-      <View className="flex flex-row border-b border-slate-600/20 p-4">
-        {/* User avatar */}
-        <Image
-          source={{ uri: item.user.avatar }}
-          className="w-12 h-12 rounded-full mr-3"
-        />
+export const CommentComponent = memo(({ item }: { item: Comment }) => {
+  const { MB_Preferred_Theme } = useHomeStore();
+  return (
+    // Container for the entire comment
+    <View className="flex flex-row border-b border-slate-600/20 p-4">
+      {/* User avatar */}
+      <Image
+        source={{ uri: item.user.avatar }}
+        className="w-12 h-12 rounded-full mr-3"
+      />
 
-        {/* Comment content container */}
-        <View className="flex-1">
-          {/* User info and timestamp */}
-          <View className="flex flex-row items-center mb-1">
-            {/* User name */}
-            <Text
-              style={{
-                color: Colors[colorScheme ?? "light"].text,
-              }}
-              className="text-base font-bold mr-2"
-            >
-              {item.user.name}
-            </Text>
-
-            {/* Username and timestamp */}
-            <Text
-              className="text-sm text-gray-500"
-              style={{
-                color: Colors[colorScheme ?? "light"].textSecondary,
-              }}
-            >
-              {/* Generate username from user's name and display timestamp */}
-              @{item.user.name.toLowerCase().replace(/\s/g, "")} ·{" "}
-              {new Date(item.timestamp).toLocaleString(undefined, {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })}
-            </Text>
-          </View>
-
-          {/* Comment text */}
+      {/* Comment content container */}
+      <View className="flex-1">
+        {/* User info and timestamp */}
+        <View className="flex flex-row items-center mb-1">
+          {/* User name */}
           <Text
-            className="text-base"
             style={{
-              color: Colors[colorScheme ?? "light"].text,
+              color: Colors[MB_Preferred_Theme ?? "light"].text,
+            }}
+            className="text-base font-bold mr-2"
+          >
+            {item.user.name}
+          </Text>
+
+          {/* Username and timestamp */}
+          <Text
+            className="text-sm text-gray-500"
+            style={{
+              color: Colors[MB_Preferred_Theme ?? "light"].textSecondary,
             }}
           >
-            {item.comment}
+            {/* Generate username from user's name and display timestamp */}@
+            {item.user.name.toLowerCase().replace(/\s/g, "")} ·{" "}
+            {new Date(item.timestamp).toLocaleString(undefined, {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            })}
           </Text>
         </View>
+
+        {/* Comment text */}
+        <Text
+          className="text-base"
+          style={{
+            color: Colors[MB_Preferred_Theme ?? "light"].text,
+          }}
+        >
+          {item.comment}
+        </Text>
       </View>
-    );
-  }
-);
+    </View>
+  );
+});

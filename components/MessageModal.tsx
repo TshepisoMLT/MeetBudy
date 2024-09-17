@@ -8,15 +8,15 @@ import {
   SafeAreaView,
   TextInput,
 } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useChatsStore } from "@/stores/chatsStore";
 import ReactNativeModal from "react-native-modal";
 import MessageComponent from "./MessageComponent";
+import { useHomeStore } from "@/stores/homeStore";
 
 const ChatModal = () => {
-  const colorScheme = useColorScheme();
+  const { MB_Preferred_Theme } = useHomeStore();
   const { setOpenMessageModal, selectedMessage, openMessageModal } =
     useChatsStore();
 
@@ -34,7 +34,7 @@ const ChatModal = () => {
         onSwipeComplete={() => setOpenMessageModal(false)}
         swipeDirection="down"
         style={{
-          backgroundColor: Colors[colorScheme ?? "light"].background,
+          backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
           flex: 1,
           margin: 0,
           padding: 0,
@@ -42,7 +42,9 @@ const ChatModal = () => {
       >
         <View
           className=" rounded-t-lg border-b border-gray-900"
-          style={{ backgroundColor: Colors[colorScheme ?? "light"].background }}
+          style={{
+            backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
+          }}
         >
           <View className="flex-row justify-between items-center p-3">
             <TouchableOpacity
@@ -52,19 +54,19 @@ const ChatModal = () => {
               <Ionicons
                 name="chevron-down"
                 size={28}
-                color={Colors[colorScheme ?? "light"].text}
+                color={Colors[MB_Preferred_Theme ?? "light"].text}
               />
             </TouchableOpacity>
             <Text
               className="text-lg font-bold ml-4 "
-              style={{ color: Colors[colorScheme ?? "light"].text }}
+              style={{ color: Colors[MB_Preferred_Theme ?? "light"].text }}
             >
               {selectedMessage?.sender}
             </Text>
             <Text
               className="text-sm flex-1 ml-2 font-thin py-1  "
               style={{
-                color: Colors[colorScheme ?? "light"].primary,
+                color: Colors[MB_Preferred_Theme ?? "light"].primary,
               }}
             >
               Seen : 10:23
@@ -78,7 +80,7 @@ const ChatModal = () => {
             keyExtractor={(item) => item.id}
             // inverted
             contentContainerStyle={{
-              backgroundColor: Colors[colorScheme ?? "light"].background,
+              backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
               flex: 1,
               justifyContent: "flex-end",
               paddingHorizontal: 4,
@@ -95,7 +97,7 @@ const ChatModal = () => {
               <View className="flex-1 items-center justify-center">
                 <Text
                   className="text-lg"
-                  style={{ color: Colors[colorScheme ?? "light"].text }}
+                  style={{ color: Colors[MB_Preferred_Theme ?? "light"].text }}
                 >
                   Say Hi to {selectedMessage.sender}
                 </Text>
@@ -108,7 +110,7 @@ const ChatModal = () => {
             placeholder="Type your message here"
             className="flex-1 py-2 px-3 rounded-full bg-gray-100"
             style={{
-              color: Colors[colorScheme ?? "light"].text,
+              color: Colors[MB_Preferred_Theme ?? "light"].text,
               fontSize: 16,
             }}
             multiline
@@ -117,7 +119,8 @@ const ChatModal = () => {
           <TouchableOpacity
             className="ml-3 rounded-full p-2"
             style={{
-              backgroundColor: Colors[colorScheme ?? "light"].tabIconSelected,
+              backgroundColor:
+                Colors[MB_Preferred_Theme ?? "light"].tabIconSelected,
             }}
           >
             <Ionicons name="send" size={24} color="white" />

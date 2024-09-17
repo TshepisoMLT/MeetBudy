@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useHomeStore } from "@/stores/homeStore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SettingItem = ({
   label,
@@ -18,7 +20,11 @@ const SettingItem = ({
   label: string;
   value: boolean;
   onValueChange: (value: boolean) => void;
-  icon: "notifications-outline" | "moon-outline" | "refresh-outline";
+  icon:
+    | "notifications-outline"
+    | "moon-outline"
+    | "refresh-outline"
+    | "sunny-outline";
 }) => (
   <View style={styles.settingItem}>
     <View style={styles.settingLeft}>
@@ -35,9 +41,22 @@ const SettingItem = ({
 );
 
 const SettingsPage = () => {
-  const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [autoUpdate, setAutoUpdate] = useState(false);
+  const { MB_Preferred_Theme, setMB_Preferred_Theme } = useHomeStore();
+
+  const toggleTheme = async () => {
+    if (MB_Preferred_Theme === "light") {
+      setMB_Preferred_Theme("dark");
+      await AsyncStorage.setItem("MB_Preferred_Theme", "dark");
+    } else if (MB_Preferred_Theme === "dark") {
+      setMB_Preferred_Theme("light");
+      await AsyncStorage.setItem("MB_Preferred_Theme", "light");
+    } else if (MB_Preferred_Theme === "default") {
+      setMB_Preferred_Theme("light");
+      await AsyncStorage.setItem("MB_Preferred_Theme", "default");
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -46,10 +65,16 @@ const SettingsPage = () => {
       <View style={styles.section}>
         <Text style={styles.sectionHeader}>Appearance</Text>
         <SettingItem
-          label="Dark Mode"
-          value={darkMode}
-          onValueChange={setDarkMode}
-          icon="moon-outline"
+          label={
+            MB_Preferred_Theme === "light"
+              ? "Switch to Dark Mode"
+              : "Switch to Light Mode"
+          }
+          value={MB_Preferred_Theme === "light" ? false : true}
+          onValueChange={toggleTheme}
+          icon={
+            MB_Preferred_Theme === "light" ? "moon-outline" : "sunny-outline"
+          }
         />
       </View>
 
