@@ -11,78 +11,102 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { TouchableOpacity, StatusBar, PlatformColor } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
+import { useHomeStore } from "@/stores/homeStore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Appearance } from "react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  // Get the current color scheme (light or dark)
+  const router = useRouter();
   const colorScheme = useColorScheme();
+  const { setMB_Preferred_Theme } = useHomeStore();
 
-  // Load custom fonts
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     RobotoRegular: require("../assets/fonts/Roboto-Regular.ttf"),
     RobotoBold: require("../assets/fonts/Roboto-Bold.ttf"),
   });
 
-  // Hide splash screen when fonts are loaded
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
+      router.replace("/(public)/login");
     }
-  }, [loaded]);
+  }, [loaded, router]);
 
-  // Return null or a loading indicator if fonts are not loaded yet
+  const getPreferredTheme = async () => {
+    try {
+      const theme = await AsyncStorage.getItem("MB_Preferred_Theme");
+      console.log("Stored theme: ", theme);
+      if (theme === "dark" || theme === "light") {
+        setMB_Preferred_Theme(theme);
+        return true;
+      }
+      setMB_Preferred_Theme(colorScheme === "dark" ? "dark" : "light");
+      return false;
+    } catch (error) {
+      console.error("Error reading theme from AsyncStorage:", error);
+      setMB_Preferred_Theme(colorScheme === "dark" ? "dark" : "light");
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    const subscription = Appearance.addChangeListener(
+      async ({ colorScheme }) => {
+        const hasTheme = await getPreferredTheme();
+        if (colorScheme && !hasTheme) {
+          setMB_Preferred_Theme(colorScheme === "dark" ? "dark" : "light");
+        }
+      }
+    );
+
+    return () => subscription.remove();
+  }, []);
+
   if (!loaded) {
-    return null; // or return a loading indicator
+    return null;
   }
 
   return (
-    // Provide the appropriate theme based on the color scheme
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      {/* Set the status bar style based on the color scheme */}
       <StatusBar
         barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
       />
-      {/* Set up the navigation stack with custom options */}
       <Stack
         screenOptions={{
           animation: "slide_from_right",
           headerStyle: {
-            backgroundColor: colorScheme === "dark" ? "#1c1c1c" : "#ffffff",
+            backgroundColor: Colors[colorScheme ?? "light"].background,
           },
           headerTitleStyle: {
             fontFamily: "RobotoBold",
             fontSize: 18,
           },
           headerTitleAlign: "center",
-          headerTintColor: colorScheme === "dark" ? "#ffffff" : "#333333",
+          headerTintColor: Colors[colorScheme ?? "light"].icon,
           headerBackTitleVisible: false,
           headerBackTitle: "Back",
           headerBackButtonMenuEnabled: true,
         }}
-        initialRouteName="(tabs)"
       >
-        {/* Main tab navigation */}
+        <Stack.Screen name="(public)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-
-        {/* Not found screen */}
         <Stack.Screen name="+not-found" options={{ headerShown: false }} />
-
-        {/* Contact screen */}
         <Stack.Screen
-          name="contact"
+          name="settings"
           options={{
-            title: "Contact Us",
+            title: "",
             headerRight: () => (
-              // Add a call icon to the header
               <TouchableOpacity
                 onPress={() => console.log("Contact Us")}
                 style={{ marginRight: 15 }}
@@ -90,20 +114,18 @@ export default function RootLayout() {
                 <Ionicons
                   name="call-outline"
                   size={24}
-                  color={colorScheme === "dark" ? "#ffffff" : "#333333"}
+                  color={Colors[colorScheme ?? "light"].tabIconSelected}
                 />
               </TouchableOpacity>
             ),
+            animation: "slide_from_right",
           }}
         />
-
-        {/* Profile screen */}
         <Stack.Screen
           name="profile"
           options={{
             title: "Profile",
             headerRight: () => (
-              // Add an edit icon to the header
               <TouchableOpacity
                 onPress={() => console.log("Edit Profile")}
                 style={{ marginRight: 15 }}
@@ -111,11 +133,31 @@ export default function RootLayout() {
                 <Ionicons
                   name="pencil-outline"
                   size={24}
-                  color={colorScheme === "dark" ? "#ffffff" : "#333333"}
+                  color={Colors[colorScheme ?? "light"].tabIconSelected}
                 />
               </TouchableOpacity>
             ),
             animation: "slide_from_left",
+          }}
+        />
+        <Stack.Screen
+          name="messages"
+          options={{
+            title: "",
+            headerRight: () => (
+              <TouchableOpacity
+                onPress={() => console.log("More Messages")}
+                style={{ marginRight: 15 }}
+              >
+                <Ionicons
+                  name="settings-outline"
+                  size={24}
+                  color={Colors[colorScheme ?? "light"].tabIconSelected}
+                />
+              </TouchableOpacity>
+            ),
+            animation: "slide_from_right",
+            headerShadowVisible: false,
           }}
         />
       </Stack>

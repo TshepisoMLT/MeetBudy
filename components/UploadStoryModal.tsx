@@ -13,18 +13,18 @@ import {
   Image,
   ScrollView,
 } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import ReactNativeModal from "react-native-modal";
 import { useUploadStore } from "@/stores/UploadStore";
-import * as ImagePicker from "expo-image-picker"
+import * as ImagePicker from "expo-image-picker";
+import { useHomeStore } from "@/stores/homeStore";
 
 export default function UploadStoryModal() {
   // Get the current color scheme (light/dark mode)
-  const colorScheme = useColorScheme();
-  
+  const { MB_Preferred_Theme } = useHomeStore();
+
   // Destructure values and functions from the upload store
   const {
     setIsUploadModalOpen,
@@ -32,11 +32,12 @@ export default function UploadStoryModal() {
     isPostingStory,
     setIsPostingStory,
   } = useUploadStore();
-  
+
   // State variables for story details
   const [storyText, setStoryText] = useState("");
   const [duration, setDuration] = useState(24); // Default duration in hours
-  const [selectedImage, setSelectedImage] = useState<ImagePicker.ImagePickerAsset|null>(null);
+  const [selectedImage, setSelectedImage] =
+    useState<ImagePicker.ImagePickerAsset | null>(null);
   const [isPublic, setIsPublic] = useState(true);
   const [location, setLocation] = useState("");
 
@@ -64,7 +65,7 @@ export default function UploadStoryModal() {
   };
 
   // Function to handle duration change
-  const handleDurationChange = (hours:number) => {
+  const handleDurationChange = (hours: number) => {
     setDuration(hours);
   };
 
@@ -84,47 +85,47 @@ export default function UploadStoryModal() {
         {/* Scrollable content of the modal */}
         <ScrollView
           style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
+            backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
             maxHeight: "100%",
           }}
         >
           <View style={{ padding: 20 }}>
             {/* Modal handle bar */}
             <View className="bg-gray-300 h-1 w-16 rounded-full self-center mb-4" />
-            
+
             {/* Modal title */}
             <Text
               style={{
                 fontSize: 24,
                 fontWeight: "bold",
                 marginBottom: 16,
-                color: Colors[colorScheme ?? "light"].text,
+                color: Colors[MB_Preferred_Theme ?? "light"].text,
                 textAlign: "center",
               }}
             >
               Create New Story
             </Text>
-            
+
             {/* Story text input */}
             <TextInput
               style={{
                 height: 100,
-                borderColor: Colors[colorScheme ?? "light"].text,
+                borderColor: Colors[MB_Preferred_Theme ?? "light"].text,
                 borderWidth: 1,
                 borderRadius: 8,
                 padding: 10,
                 marginBottom: 16,
-                color: Colors[colorScheme ?? "light"].text,
+                color: Colors[MB_Preferred_Theme ?? "light"].text,
               }}
               multiline
               placeholder="What's your story?"
               placeholderTextColor={
-                Colors[colorScheme ?? "light"].textSecondary
+                Colors[MB_Preferred_Theme ?? "light"].textSecondary
               }
               value={storyText}
               onChangeText={setStoryText}
             />
-            
+
             {/* Image selection button */}
             <TouchableOpacity
               onPress={handleSelectImage}
@@ -132,7 +133,7 @@ export default function UploadStoryModal() {
                 flexDirection: "row",
                 alignItems: "center",
                 marginBottom: 16,
-                backgroundColor: Colors[colorScheme ?? "light"].tint,
+                backgroundColor: Colors[MB_Preferred_Theme ?? "light"].tint,
                 padding: 12,
                 borderRadius: 8,
               }}
@@ -142,7 +143,7 @@ export default function UploadStoryModal() {
                 {selectedImage ? "Change Image" : "Add Image"}
               </Text>
             </TouchableOpacity>
-            
+
             {/* Display selected image */}
             {selectedImage && (
               <Image
@@ -155,13 +156,13 @@ export default function UploadStoryModal() {
                 }}
               />
             )}
-            
+
             {/* Story duration section */}
             <Text
               style={{
                 fontSize: 18,
                 marginBottom: 8,
-                color: Colors[colorScheme ?? "light"].text,
+                color: Colors[MB_Preferred_Theme ?? "light"].text,
               }}
             >
               Story Duration:
@@ -181,9 +182,9 @@ export default function UploadStoryModal() {
                   style={{
                     backgroundColor:
                       duration === hours
-                        ? Colors[colorScheme ?? "light"].tint
+                        ? Colors[MB_Preferred_Theme ?? "light"].tint
                         : "transparent",
-                    borderColor: Colors[colorScheme ?? "light"].tint,
+                    borderColor: Colors[MB_Preferred_Theme ?? "light"].tint,
                     borderWidth: 1,
                     borderRadius: 8,
                     padding: 8,
@@ -194,7 +195,7 @@ export default function UploadStoryModal() {
                       color:
                         duration === hours
                           ? "#FFFFFF"
-                          : Colors[colorScheme ?? "light"].text,
+                          : Colors[MB_Preferred_Theme ?? "light"].text,
                       fontSize: 16,
                     }}
                   >
@@ -203,12 +204,12 @@ export default function UploadStoryModal() {
                 </TouchableOpacity>
               ))}
             </View>
-            
+
             {/* Location input section */}
             <View style={{ marginBottom: 16 }}>
               <Text
                 style={{
-                  color: Colors[colorScheme ?? "light"].text,
+                  color: Colors[MB_Preferred_Theme ?? "light"].text,
                   fontSize: 16,
                   marginBottom: 8,
                 }}
@@ -217,26 +218,26 @@ export default function UploadStoryModal() {
               </Text>
               <TextInput
                 style={{
-                  borderColor: Colors[colorScheme ?? "light"].text,
+                  borderColor: Colors[MB_Preferred_Theme ?? "light"].text,
                   borderWidth: 1,
                   borderRadius: 8,
                   padding: 10,
-                  color: Colors[colorScheme ?? "light"].text,
+                  color: Colors[MB_Preferred_Theme ?? "light"].text,
                 }}
                 placeholder="Enter location"
                 placeholderTextColor={
-                  Colors[colorScheme ?? "light"].textSecondary
+                  Colors[MB_Preferred_Theme ?? "light"].textSecondary
                 }
                 value={location}
                 onChangeText={setLocation}
               />
             </View>
-            
+
             {/* Upload story button */}
             <TouchableOpacity
               onPress={handleUploadStory}
               style={{
-                backgroundColor: Colors[colorScheme ?? "light"].tint,
+                backgroundColor: Colors[MB_Preferred_Theme ?? "light"].tint,
                 padding: 16,
                 borderRadius: 12,
                 alignItems: "center",

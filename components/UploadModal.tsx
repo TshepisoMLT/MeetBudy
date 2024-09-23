@@ -1,30 +1,36 @@
 /**
  * Renders the upload modal component, which provides options for creating new content such as posts, stories, live streams, and polls.
- * 
+ *
  * The modal is displayed when the `isUploadModalOpen` state is true, and is closed when the user interacts with the backdrop, back button, or swipes down the modal.
- * 
+ *
  * The modal content includes a title, a handle for swiping the modal down, and four options:
  * - "Write a post": Triggers the `setIsPostingPost` action and closes the modal.
  * - "Add a story": Triggers the `setIsPostingStory` action and closes the modal.
  * - "Start a live stream": Closes the modal (live stream functionality is not yet implemented).
  * - "Create a poll": Closes the modal (poll creation functionality is not yet implemented).
- * 
+ *
  * The modal's appearance (colors, icons) adapts to the user's color scheme (light or dark).
  */
 import React from "react";
-import { View, Text, TouchableOpacity, StatusBar, StyleSheet } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StatusBar,
+  StyleSheet,
+} from "react-native";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import ReactNativeModal from "react-native-modal";
 import { useUploadStore } from "@/stores/UploadStore";
+import { useHomeStore } from "@/stores/homeStore";
 
 // Component for displaying the upload modal
 export default function UploadModal() {
   // Get the current color scheme (light/dark)
-  const colorScheme = useColorScheme();
-  
+  const { MB_Preferred_Theme } = useHomeStore();
+
   // Destructure functions and state from the upload store
   const {
     setIsUploadModalOpen,
@@ -35,13 +41,13 @@ export default function UploadModal() {
 
   // Handler for the "Write a post" option
   const handlePostOption = () => {
-    setIsPostingPost(true)
+    setIsPostingPost(true);
     setIsUploadModalOpen(false);
   };
 
   // Handler for the "Add a story" option
   const handleStoryOption = () => {
-    setIsPostingStory(true)
+    setIsPostingStory(true);
     setIsUploadModalOpen(false);
   };
 
@@ -61,7 +67,9 @@ export default function UploadModal() {
     <SafeAreaView style={styles.container}>
       {/* Status bar that adapts to the color scheme */}
       <StatusBar
-        barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
+        barStyle={
+          MB_Preferred_Theme === "dark" ? "light-content" : "dark-content"
+        }
       />
       {/* Modal component for the upload options */}
       <ReactNativeModal
@@ -75,11 +83,23 @@ export default function UploadModal() {
         style={styles.modal}
       >
         {/* Modal content */}
-        <View style={[styles.modalContent, { backgroundColor: Colors[colorScheme ?? "light"].background }]}>
+        <View
+          style={[
+            styles.modalContent,
+            {
+              backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
+            },
+          ]}
+        >
           {/* Handle for swiping the modal down */}
           <View style={styles.handle} />
           {/* Modal title */}
-          <Text style={[styles.title, { color: Colors[colorScheme ?? "light"].text }]}>
+          <Text
+            style={[
+              styles.title,
+              { color: Colors[MB_Preferred_Theme ?? "light"].text },
+            ]}
+          >
             Create New Content
           </Text>
           {/* "Write a post" option */}
@@ -87,9 +107,14 @@ export default function UploadModal() {
             <Ionicons
               name="create-outline"
               size={28}
-              color={Colors[colorScheme ?? "light"].text}
+              color={Colors[MB_Preferred_Theme ?? "light"].text}
             />
-            <Text style={[styles.optionText, { color: Colors[colorScheme ?? "light"].text }]}>
+            <Text
+              style={[
+                styles.optionText,
+                { color: Colors[MB_Preferred_Theme ?? "light"].text },
+              ]}
+            >
               Write a post
             </Text>
           </TouchableOpacity>
@@ -98,20 +123,33 @@ export default function UploadModal() {
             <Ionicons
               name="camera-outline"
               size={28}
-              color={Colors[colorScheme ?? "light"].text}
+              color={Colors[MB_Preferred_Theme ?? "light"].text}
             />
-            <Text style={[styles.optionText, { color: Colors[colorScheme ?? "light"].text }]}>
+            <Text
+              style={[
+                styles.optionText,
+                { color: Colors[MB_Preferred_Theme ?? "light"].text },
+              ]}
+            >
               Add a story
             </Text>
           </TouchableOpacity>
           {/* "Start a live stream" option */}
-          <TouchableOpacity onPress={handleLiveStreamOption} style={styles.option}>
+          <TouchableOpacity
+            onPress={handleLiveStreamOption}
+            style={styles.option}
+          >
             <Ionicons
               name="videocam-outline"
               size={28}
-              color={Colors[colorScheme ?? "light"].text}
+              color={Colors[MB_Preferred_Theme ?? "light"].text}
             />
-            <Text style={[styles.optionText, { color: Colors[colorScheme ?? "light"].text }]}>
+            <Text
+              style={[
+                styles.optionText,
+                { color: Colors[MB_Preferred_Theme ?? "light"].text },
+              ]}
+            >
               Start a live stream
             </Text>
           </TouchableOpacity>
@@ -120,9 +158,14 @@ export default function UploadModal() {
             <Ionicons
               name="bar-chart-outline"
               size={28}
-              color={Colors[colorScheme ?? "light"].text}
+              color={Colors[MB_Preferred_Theme ?? "light"].text}
             />
-            <Text style={[styles.optionText, { color: Colors[colorScheme ?? "light"].text }]}>
+            <Text
+              style={[
+                styles.optionText,
+                { color: Colors[MB_Preferred_Theme ?? "light"].text },
+              ]}
+            >
               Create a poll
             </Text>
           </TouchableOpacity>

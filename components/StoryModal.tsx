@@ -6,7 +6,7 @@
  * - `toggleStoryModal`: a function that toggles the visibility of the story modal
  * - `openStory`: an object of type `Story` that contains the details of the story to be displayed
  *
- * The component uses various React Native components and hooks to implement the functionality, including `ReactNativeModal`, `Animated`, and `useColorScheme`. It also uses the `useEffect` hook to prefetch the story image and manage the image loading state.
+ * The component uses various React Native components and hooks to implement the functionality, including `ReactNativeModal`, `Animated`, and `useMB_Preferred_Theme`. It also uses the `useEffect` hook to prefetch the story image and manage the image loading state.
  *
  * The component renders the story modal with the user's avatar, name, and post date, as well as the story image (with an optional text overlay) and interactive elements such as reaction emojis and a reply input. The component also handles the sharing of the story using the `Share` API.
  */
@@ -21,7 +21,6 @@ import {
   Share,
   Platform,
 } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -32,6 +31,7 @@ import Animated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 import { Story } from "@/constants/Types";
+import { useHomeStore } from "@/stores/homeStore";
 
 // Define the props for the StoryModal component
 type StoryModalProps = {
@@ -46,7 +46,7 @@ export default function StoryModal({
   openStory,
 }: StoryModalProps) {
   // Get the current color scheme (light or dark)
-  const colorScheme = useColorScheme();
+  const { MB_Preferred_Theme } = useHomeStore();
   // State to track if the image has loaded
   const [imageLoaded, setImageLoaded] = useState(false);
   // State to store the reply text
@@ -81,12 +81,14 @@ export default function StoryModal({
       // Attempt to share the story using the Share API
       await Share.share({
         // Construct the message based on the platform
-        message: `${Platform.OS === "android" ? 
-          // For Android, include the story image URL in the message
-          `Check out this story from ${openStory?.name}!, ${openStory?.storyImage} ` :
-          // For iOS, only include the story name
-          `Check out this story from ${openStory?.name}!
-        `}`,
+        message: `${
+          Platform.OS === "android"
+            ? // For Android, include the story image URL in the message
+              `Check out this story from ${openStory?.name}!, ${openStory?.storyImage} `
+            : // For iOS, only include the story name
+              `Check out this story from ${openStory?.name}!
+        `
+        }`,
         // Set the URL to the story image
         url: openStory?.storyImage,
         // Set the title for the share dialog
@@ -107,7 +109,7 @@ export default function StoryModal({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: Colors[colorScheme ?? "light"].background,
+        backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
       }}
     >
       {/* Modal component for displaying the story */}
@@ -120,7 +122,7 @@ export default function StoryModal({
         swipeDirection={["down"]}
         onSwipeComplete={() => toggleStoryModal(null)}
         style={{
-          backgroundColor: Colors[colorScheme ?? "light"].background,
+          backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
           flex: 1,
           margin: 0,
           padding: 0,
@@ -129,7 +131,7 @@ export default function StoryModal({
         <View
           style={{
             flex: 1,
-            backgroundColor: Colors[colorScheme ?? "light"].background,
+            backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
           }}
         >
           {/* Header section with user info and controls */}
@@ -151,7 +153,7 @@ export default function StoryModal({
               <View>
                 <Text
                   style={{
-                    color: Colors[colorScheme ?? "light"].text,
+                    color: Colors[MB_Preferred_Theme ?? "light"].text,
                     fontWeight: "bold",
                     fontSize: 16,
                   }}
@@ -160,7 +162,7 @@ export default function StoryModal({
                 </Text>
                 <Text
                   style={{
-                    color: Colors[colorScheme ?? "light"].text,
+                    color: Colors[MB_Preferred_Theme ?? "light"].text,
                     fontSize: 12,
                   }}
                 >
@@ -181,7 +183,7 @@ export default function StoryModal({
               <Ionicons
                 name="arrow-redo-outline"
                 size={24}
-                color={Colors[colorScheme ?? "light"].text}
+                color={Colors[MB_Preferred_Theme ?? "light"].text}
               />
             </TouchableOpacity>
             {/* Close button */}
@@ -192,7 +194,7 @@ export default function StoryModal({
               <Ionicons
                 name="chevron-down"
                 size={24}
-                color={Colors[colorScheme ?? "light"].text}
+                color={Colors[MB_Preferred_Theme ?? "light"].text}
               />
             </TouchableOpacity>
           </View>
@@ -235,7 +237,7 @@ export default function StoryModal({
               >
                 <ActivityIndicator
                   size="large"
-                  color={Colors[colorScheme ?? "light"].text}
+                  color={Colors[MB_Preferred_Theme ?? "light"].text}
                 />
               </View>
             )}
@@ -270,15 +272,15 @@ export default function StoryModal({
             <TextInput
               style={{
                 flex: 1,
-                borderColor: Colors[colorScheme ?? "light"].text,
+                borderColor: Colors[MB_Preferred_Theme ?? "light"].text,
                 borderWidth: 1,
                 borderRadius: 20,
                 padding: 10,
-                color: Colors[colorScheme ?? "light"].text,
+                color: Colors[MB_Preferred_Theme ?? "light"].text,
               }}
               className="bg-slate-500/30"
               placeholder="Reply to story..."
-              placeholderTextColor={Colors[colorScheme ?? "light"].text}
+              placeholderTextColor={Colors[MB_Preferred_Theme ?? "light"].text}
               value={replyText}
               onChangeText={setReplyText}
             />
@@ -293,7 +295,7 @@ export default function StoryModal({
               <Ionicons
                 name="send"
                 size={24}
-                color={Colors[colorScheme ?? "light"].text}
+                color={Colors[MB_Preferred_Theme ?? "light"].text}
               />
             </TouchableOpacity>
           </View>

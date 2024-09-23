@@ -16,10 +16,10 @@ import {
   Share,
   Platform,
 } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { Post } from "@/constants/Types";
+import { useHomeStore } from "@/stores/homeStore";
 
 // Define the props for the PostComponent component
 type PostComponentProps = {
@@ -31,7 +31,7 @@ type PostComponentProps = {
 export const PostComponent = memo(
   ({ item, toggleCommentModal }: PostComponentProps) => {
     // Get the current color scheme (light/dark)
-    const colorScheme = useColorScheme();
+    const { MB_Preferred_Theme } = useHomeStore();
 
     // State for managing like status and count
     const [liked, setLiked] = useState(false);
@@ -100,7 +100,7 @@ export const PostComponent = memo(
       <View
         className="overflow-hidden border-t border-slate-600/20"
         style={{
-          backgroundColor: Colors[colorScheme ?? "light"].background,
+          backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
         }}
       >
         {/* Post header: User info and options */}
@@ -118,14 +118,16 @@ export const PostComponent = memo(
               <TouchableOpacity>
                 <Text
                   className="font-bold text-base"
-                  style={{ color: Colors[colorScheme ?? "light"].text }}
+                  style={{ color: Colors[MB_Preferred_Theme ?? "light"].text }}
                 >
                   {item.name}
                 </Text>
               </TouchableOpacity>
               <Text
                 className="text-xs"
-                style={{ color: Colors[colorScheme ?? "light"].textSecondary }}
+                style={{
+                  color: Colors[MB_Preferred_Theme ?? "light"].textSecondary,
+                }}
               >
                 {new Date(item.postedTime).toLocaleString(undefined, {
                   year: "numeric",
@@ -143,7 +145,7 @@ export const PostComponent = memo(
             <Ionicons
               name="ellipsis-horizontal"
               size={20}
-              color={Colors[colorScheme ?? "light"].text}
+              color={Colors[MB_Preferred_Theme ?? "light"].text}
             />
           </TouchableOpacity>
         </View>
@@ -152,7 +154,7 @@ export const PostComponent = memo(
         <View className="px-3 pb-3">
           <Text
             className="text-base"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
+            style={{ color: Colors[MB_Preferred_Theme ?? "light"].text }}
           >
             {item.caption}
           </Text>
@@ -176,7 +178,7 @@ export const PostComponent = memo(
               <Ionicons
                 name="image-outline"
                 size={48}
-                color={Colors[colorScheme ?? "light"].textSecondary}
+                color={Colors[MB_Preferred_Theme ?? "light"].textSecondary}
               />
             </View>
           )}
@@ -192,11 +194,13 @@ export const PostComponent = memo(
             <Ionicons
               name={liked ? "heart" : "heart-outline"}
               size={24}
-              color={liked ? "#e74c3c" : Colors[colorScheme ?? "light"].text}
+              color={
+                liked ? "#e74c3c" : Colors[MB_Preferred_Theme ?? "light"].text
+              }
             />
             <Text
               className="font-semibold"
-              style={{ color: Colors[colorScheme ?? "light"].text }}
+              style={{ color: Colors[MB_Preferred_Theme ?? "light"].text }}
             >
               {likeCount}
             </Text>
@@ -210,11 +214,11 @@ export const PostComponent = memo(
             <Ionicons
               name="chatbubble-outline"
               size={22}
-              color={Colors[colorScheme ?? "light"].text}
+              color={Colors[MB_Preferred_Theme ?? "light"].text}
             />
             <Text
               className="font-semibold"
-              style={{ color: Colors[colorScheme ?? "light"].text }}
+              style={{ color: Colors[MB_Preferred_Theme ?? "light"].text }}
             >
               {commentCount}
             </Text>
@@ -222,24 +226,18 @@ export const PostComponent = memo(
 
           {/* Bookmark button */}
           <TouchableOpacity
-            onPress={handleShare}
+            // onPress={handleShare}
             className="flex flex-row items-center space-x-1"
           >
             <Ionicons
-              name={isShared ? "bookmark" : "arrow-redo-outline"}
+              name={isShared ? "bookmark" : "bookmark-outline"}
               size={22}
               color={
                 isShared
-                  ? Colors[colorScheme ?? "light"].tint
-                  : Colors[colorScheme ?? "light"].text
+                  ? Colors[MB_Preferred_Theme ?? "light"].tint
+                  : Colors[MB_Preferred_Theme ?? "light"].text
               }
             />
-            <Text
-              className="font-semibold"
-              style={{ color: Colors[colorScheme ?? "light"].text }}
-            >
-              {shareCount}
-            </Text>
           </TouchableOpacity>
 
           {/* Share button */}
@@ -252,13 +250,13 @@ export const PostComponent = memo(
               size={22}
               color={
                 isShared
-                  ? Colors[colorScheme ?? "light"].tint
-                  : Colors[colorScheme ?? "light"].text
+                  ? Colors[MB_Preferred_Theme ?? "light"].tint
+                  : Colors[MB_Preferred_Theme ?? "light"].text
               }
             />
             <Text
               className="font-semibold"
-              style={{ color: Colors[colorScheme ?? "light"].text }}
+              style={{ color: Colors[MB_Preferred_Theme ?? "light"].text }}
             >
               {shareCount}
             </Text>

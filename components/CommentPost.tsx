@@ -7,17 +7,22 @@
  */
 
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { Post } from "@/constants/Types";
 import { Ionicons } from "@expo/vector-icons";
 import { useCallback, useState } from "react";
+import { useHomeStore } from "@/stores/homeStore";
 
 // CommentPost component for rendering a post with comments
-export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()=>void }) => {
-
+export const CommentPost = ({
+  post,
+  onImageLoad,
+}: {
+  post: Post;
+  onImageLoad: () => void;
+}) => {
   // Get the current color scheme (light/dark mode)
-  const colorScheme = useColorScheme();
+  const { MB_Preferred_Theme } = useHomeStore();
 
   // State for managing like status and count
   const [liked, setLiked] = useState(false);
@@ -55,13 +60,15 @@ export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()
           <View>
             <Text
               className="font-bold text-lg"
-              style={{ color: Colors[colorScheme ?? "light"].text }}
+              style={{ color: Colors[MB_Preferred_Theme ?? "light"].text }}
             >
               {post?.name}
             </Text>
             <Text
               className="text-sm text-gray-500"
-              style={{ color: Colors[colorScheme ?? "light"].textSecondary }}
+              style={{
+                color: Colors[MB_Preferred_Theme ?? "light"].textSecondary,
+              }}
             >
               {/* Format and display the post time */}
               {new Date(post.postedTime).toLocaleString(undefined, {
@@ -80,7 +87,7 @@ export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()
             <Ionicons
               name="ellipsis-horizontal"
               size={20}
-              color={Colors[colorScheme ?? "light"].text}
+              color={Colors[MB_Preferred_Theme ?? "light"].text}
             />
           </TouchableOpacity>
         </View>
@@ -90,7 +97,7 @@ export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()
           {/* Post caption */}
           <Text
             className="text-lg font-semibold"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
+            style={{ color: Colors[MB_Preferred_Theme ?? "light"].text }}
           >
             {post?.caption}
           </Text>
@@ -115,11 +122,13 @@ export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()
             <Ionicons
               name={liked ? "heart" : "heart-outline"}
               size={24}
-              color={liked ? "#e74c3c" : Colors[colorScheme ?? "light"].text}
+              color={
+                liked ? "#e74c3c" : Colors[MB_Preferred_Theme ?? "light"].text
+              }
             />
             <Text
               className="font-semibold"
-              style={{ color: Colors[colorScheme ?? "light"].text }}
+              style={{ color: Colors[MB_Preferred_Theme ?? "light"].text }}
             >
               {likeCount}
             </Text>
@@ -130,9 +139,9 @@ export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()
             <Ionicons
               name="chatbubble-outline"
               size={24}
-              color={Colors[colorScheme ?? "light"].text}
+              color={Colors[MB_Preferred_Theme ?? "light"].text}
             />
-            <Text style={{ color: Colors[colorScheme ?? "light"].text }}>
+            <Text style={{ color: Colors[MB_Preferred_Theme ?? "light"].text }}>
               {post?.comments}
             </Text>
           </TouchableOpacity>
@@ -142,9 +151,9 @@ export const CommentPost = ({ post, onImageLoad }: { post: Post; onImageLoad: ()
             <Ionicons
               name="arrow-redo-outline"
               size={24}
-              color={Colors[colorScheme ?? "light"].text}
+              color={Colors[MB_Preferred_Theme ?? "light"].text}
             />
-            <Text style={{ color: Colors[colorScheme ?? "light"].text }}>
+            <Text style={{ color: Colors[MB_Preferred_Theme ?? "light"].text }}>
               {post?.shares}
             </Text>
           </TouchableOpacity>

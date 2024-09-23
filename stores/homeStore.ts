@@ -13,6 +13,8 @@ import { create } from "zustand";
 interface HomeState {
   dataRefreshing: boolean;
   setDataRefreshing: (value: boolean) => void;
+  MB_Preferred_Theme: "dark" | "light";
+  setMB_Preferred_Theme: (value: "dark" | "light") => void;
 }
 
 // Create and export the useHomeStore hook
@@ -21,4 +23,6 @@ export const useHomeStore = create<HomeState>((set) => ({
   dataRefreshing: false,
   // Function to update the dataRefreshing state
   setDataRefreshing: (value) => set({ dataRefreshing: value }),
+  MB_Preferred_Theme: "light",
+  setMB_Preferred_Theme: (value) => set({ MB_Preferred_Theme: value }),
 }));

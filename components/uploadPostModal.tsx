@@ -14,24 +14,25 @@ import {
   ScrollView,
   Switch,
 } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import ReactNativeModal from "react-native-modal";
 import { useUploadStore } from "@/stores/UploadStore";
-import * as ImagePicker from "expo-image-picker"
+import * as ImagePicker from "expo-image-picker";
+import { useHomeStore } from "@/stores/homeStore";
 
 // Component for uploading a new post
 export default function UploadPostModal() {
   // Get the current color scheme (light/dark)
-  const colorScheme = useColorScheme();
+  const { MB_Preferred_Theme } = useHomeStore();
   // Get the posting state and setter from the upload store
   const { setIsPostingPost, isPostingPost } = useUploadStore();
   // State for post content
   const [postContent, setPostContent] = useState("");
   // State for selected image
-  const [selectedImage, setSelectedImage] = useState<ImagePicker.ImagePickerAsset|null>(null);
+  const [selectedImage, setSelectedImage] =
+    useState<ImagePicker.ImagePickerAsset | null>(null);
   // State for post visibility (public/private)
   const [isPublic, setIsPublic] = useState(true);
   // State for post location
@@ -40,7 +41,12 @@ export default function UploadPostModal() {
   // Function to handle post upload
   const handleUploadPost = () => {
     // Handle post upload logic here
-    console.log("Uploading post: ", {content: postContent, image: selectedImage, public: isPublic, location: location})
+    console.log("Uploading post: ", {
+      content: postContent,
+      image: selectedImage,
+      public: isPublic,
+      location: location,
+    });
     setIsPostingPost(false);
     setPostContent("");
     setSelectedImage(null);
@@ -74,7 +80,7 @@ export default function UploadPostModal() {
       >
         <ScrollView
           style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
+            backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
             // borderTopLeftRadius: 20,
             // borderTopRightRadius: 20,
             maxHeight: "100%",
@@ -89,7 +95,7 @@ export default function UploadPostModal() {
                 fontSize: 24,
                 fontWeight: "bold",
                 marginBottom: 16,
-                color: Colors[colorScheme ?? "light"].text,
+                color: Colors[MB_Preferred_Theme ?? "light"].text,
                 textAlign: "center",
               }}
             >
@@ -99,16 +105,18 @@ export default function UploadPostModal() {
             <TextInput
               style={{
                 height: 150,
-                borderColor: Colors[colorScheme ?? "light"].text,
+                borderColor: Colors[MB_Preferred_Theme ?? "light"].text,
                 borderWidth: 1,
                 borderRadius: 8,
                 padding: 10,
                 marginBottom: 16,
-                color: Colors[colorScheme ?? "light"].text,
+                color: Colors[MB_Preferred_Theme ?? "light"].text,
               }}
               multiline
               placeholder="What's on your mind?"
-              placeholderTextColor={Colors[colorScheme ?? "light"].textSecondary}
+              placeholderTextColor={
+                Colors[MB_Preferred_Theme ?? "light"].textSecondary
+              }
               value={postContent}
               onChangeText={setPostContent}
             />
@@ -116,7 +124,12 @@ export default function UploadPostModal() {
             {selectedImage && (
               <Image
                 source={{ uri: selectedImage.uri }}
-                style={{ width: "100%", height: 300, marginBottom: 16, borderRadius: 8 }}
+                style={{
+                  width: "100%",
+                  height: 300,
+                  marginBottom: 16,
+                  borderRadius: 8,
+                }}
                 resizeMode="cover"
               />
             )}
@@ -127,43 +140,66 @@ export default function UploadPostModal() {
                 flexDirection: "row",
                 alignItems: "center",
                 marginBottom: 16,
-                backgroundColor: Colors[colorScheme ?? "light"].tint,
+                backgroundColor: Colors[MB_Preferred_Theme ?? "light"].tint,
                 padding: 12,
                 borderRadius: 8,
               }}
             >
               <Ionicons name="image-outline" size={24} color="#FFFFFF" />
               <Text style={{ marginLeft: 8, color: "#FFFFFF", fontSize: 16 }}>
-                {selectedImage?"Change Image":"Add Image"}
+                {selectedImage ? "Change Image" : "Add Image"}
               </Text>
             </TouchableOpacity>
             {/* Toggle for post visibility */}
-            <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 16 }}>
-              <Text style={{ flex: 1, color: Colors[colorScheme ?? "light"].text, fontSize: 16 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 16,
+              }}
+            >
+              <Text
+                style={{
+                  flex: 1,
+                  color: Colors[MB_Preferred_Theme ?? "light"].text,
+                  fontSize: 16,
+                }}
+              >
                 Make post public
               </Text>
               <Switch
                 value={isPublic}
                 onValueChange={setIsPublic}
-                trackColor={{ false: "#767577", true: Colors[colorScheme ?? "light"].tint }}
+                trackColor={{
+                  false: "#767577",
+                  true: Colors[MB_Preferred_Theme ?? "light"].tint,
+                }}
                 thumbColor={isPublic ? "#f4f3f4" : "#f4f3f4"}
               />
             </View>
             {/* Location input */}
             <View style={{ marginBottom: 16 }}>
-              <Text style={{ color: Colors[colorScheme ?? "light"].text, fontSize: 16, marginBottom: 8 }}>
+              <Text
+                style={{
+                  color: Colors[MB_Preferred_Theme ?? "light"].text,
+                  fontSize: 16,
+                  marginBottom: 8,
+                }}
+              >
                 Add Location
               </Text>
               <TextInput
                 style={{
-                  borderColor: Colors[colorScheme ?? "light"].text,
+                  borderColor: Colors[MB_Preferred_Theme ?? "light"].text,
                   borderWidth: 1,
                   borderRadius: 8,
                   padding: 10,
-                  color: Colors[colorScheme ?? "light"].text,
+                  color: Colors[MB_Preferred_Theme ?? "light"].text,
                 }}
                 placeholder="Enter location"
-                placeholderTextColor={Colors[colorScheme ?? "light"].textSecondary}
+                placeholderTextColor={
+                  Colors[MB_Preferred_Theme ?? "light"].textSecondary
+                }
                 value={location}
                 onChangeText={setLocation}
               />
@@ -172,13 +208,15 @@ export default function UploadPostModal() {
             <TouchableOpacity
               onPress={handleUploadPost}
               style={{
-                backgroundColor: Colors[colorScheme ?? "light"].tint,
+                backgroundColor: Colors[MB_Preferred_Theme ?? "light"].tint,
                 padding: 16,
                 borderRadius: 12,
                 alignItems: "center",
               }}
             >
-              <Text style={{ color: "#FFFFFF", fontSize: 18, fontWeight: "600" }}>
+              <Text
+                style={{ color: "#FFFFFF", fontSize: 18, fontWeight: "600" }}
+              >
                 Upload Post
               </Text>
             </TouchableOpacity>
