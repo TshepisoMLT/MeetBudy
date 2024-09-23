@@ -11,7 +11,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -26,23 +26,22 @@ import { Appearance } from "react-native";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  // Get the current color scheme (light or dark)
+  const router = useRouter();
   const colorScheme = useColorScheme();
   const { setMB_Preferred_Theme } = useHomeStore();
 
-  // Load custom fonts
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     RobotoRegular: require("../assets/fonts/Roboto-Regular.ttf"),
     RobotoBold: require("../assets/fonts/Roboto-Bold.ttf"),
   });
 
-  // Hide splash screen when fonts are loaded
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
+      router.replace("/(public)/login");
     }
-  }, [loaded]);
+  }, [loaded, router]);
 
   const getPreferredTheme = async () => {
     try {
@@ -74,19 +73,15 @@ export default function RootLayout() {
     return () => subscription.remove();
   }, []);
 
-  // Return null or a loading indicator if fonts are not loaded yet
   if (!loaded) {
-    return null; // or return a loading indicator
+    return null;
   }
 
   return (
-    // Provide the appropriate theme based on the color scheme
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      {/* Set the status bar style based on the color scheme */}
       <StatusBar
         barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
       />
-      {/* Set up the navigation stack with custom options */}
       <Stack
         screenOptions={{
           animation: "slide_from_right",
@@ -103,21 +98,15 @@ export default function RootLayout() {
           headerBackTitle: "Back",
           headerBackButtonMenuEnabled: true,
         }}
-        initialRouteName="(tabs)"
       >
-        {/* Main tab navigation */}
+        <Stack.Screen name="(public)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-
-        {/* Not found screen */}
         <Stack.Screen name="+not-found" options={{ headerShown: false }} />
-
-        {/* Contact screen */}
         <Stack.Screen
           name="settings"
           options={{
             title: "",
             headerRight: () => (
-              // Add a call icon to the header
               <TouchableOpacity
                 onPress={() => console.log("Contact Us")}
                 style={{ marginRight: 15 }}
@@ -132,14 +121,11 @@ export default function RootLayout() {
             animation: "slide_from_right",
           }}
         />
-
-        {/* Profile screen */}
         <Stack.Screen
           name="profile"
           options={{
             title: "Profile",
             headerRight: () => (
-              // Add an edit icon to the header
               <TouchableOpacity
                 onPress={() => console.log("Edit Profile")}
                 style={{ marginRight: 15 }}
@@ -154,14 +140,11 @@ export default function RootLayout() {
             animation: "slide_from_left",
           }}
         />
-
-        {/* Inbox screen */}
         <Stack.Screen
           name="messages"
           options={{
             title: "",
             headerRight: () => (
-              // Add an edit icon to the header
               <TouchableOpacity
                 onPress={() => console.log("More Messages")}
                 style={{ marginRight: 15 }}

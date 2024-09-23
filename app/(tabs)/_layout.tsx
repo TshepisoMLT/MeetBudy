@@ -53,7 +53,7 @@ export default function TabLayout() {
           headerLeft: () => (
             <TouchableOpacity
               // Navigate to profile screen on press
-              onPress={() => router.push("/profile")}
+              onPress={() => router.push("/login")}
               className="ml-4 h-12 w-12 rounded-full bg-slate-300"
             >
               <Image
