@@ -40,6 +40,7 @@ export default function RootLayout() {
     if (loaded) {
       SplashScreen.hideAsync();
       router.replace("/(public)/login");
+      // router.replace("/(tabs)");
     }
   }, [loaded, router]);
 
