@@ -97,7 +97,8 @@ export default function LoginScreen() {
         <View
           className="flex-1 justify-center p-8 rounded-t-3xl space-y-6"
           style={{
-            backgroundColor: Colors[MB_Preferred_Theme ?? "light"].accent,
+            backgroundColor:
+              Colors[MB_Preferred_Theme ?? "light"].modalBackground,
           }}
         >
           <View className="space-y-4">
@@ -245,7 +246,12 @@ export default function LoginScreen() {
             }}
             className="mt-6 justify-center items-center"
           >
-            <Text className="text-center text-blue-600 dark:text-blue-400 text-base font-semibold">
+            <Text
+              style={{
+                color: Colors[MB_Preferred_Theme ?? "light"].info,
+              }}
+              className="text-center text-base font-semibold"
+            >
               Don't have an account? Sign up!
             </Text>
           </TouchableOpacity>
