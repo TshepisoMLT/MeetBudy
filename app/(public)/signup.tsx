@@ -16,27 +16,64 @@ import { useHomeStore } from "@/stores/homeStore";
 
 export default function SignupScreen() {
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
+  const [full_name, setFull_name] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [full_nameError, setFull_nameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const { MB_Preferred_Theme } = useHomeStore();
 
   const validateInputs = () => {
-    if (!email || !password || !username || !confirmPassword) {
-      setError("Please fill in all fields");
-      return false;
+    let isValid = true;
+    setError("");
+    setEmailError("");
+    setFull_nameError("");
+    setPasswordError("");
+    setConfirmPasswordError("");
+
+    if (!email.trim()) {
+      setEmailError("Email is required");
+      isValid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailError("Invalid email address");
+      isValid = false;
     }
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return false;
+
+    if (!full_name.trim()) {
+      setFull_nameError("Full_name is required");
+      isValid = false;
     }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long");
-      return false;
+
+    if (!password.trim()) {
+      setPasswordError("Password is required");
+      isValid = false;
+    } else if (password.length < 6) {
+      setPasswordError("Password must be at least 6 characters long");
+      isValid = false;
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+      setPasswordError(
+        "Password must contain at least one lowercase letter, one uppercase letter, and one number"
+      );
+      isValid = false;
     }
-    return true;
+
+    if (!confirmPassword.trim()) {
+      setConfirmPasswordError("Please confirm your password");
+      isValid = false;
+    } else if (password !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match");
+      isValid = false;
+    }
+
+    if (!isValid) {
+      setError("Please correct the errors in the form");
+    }
+
+    return isValid;
   };
 
   const handleSignUp = async () => {
@@ -46,22 +83,39 @@ export default function SignupScreen() {
     setError("");
 
     try {
-      const { error, data } = await supabase.auth.signUp({
+      const {
+        error,
+        data: { session },
+      } = await supabase.auth.signUp({
         email: email,
         password: password,
         options: {
           data: {
-            username: username,
+            full_name: full_name,
           },
         },
       });
 
       if (error) {
+        Alert.alert(
+          "Error",
+          "Error signing up. Please try again.",
+          [
+            {
+              text: "Close",
+              onPress: () => {
+                console.log("Error signing up: ", error);
+                setError(error.message);
+              },
+            },
+          ],
+          { cancelable: false }
+        );
         console.log(error);
         throw error;
       }
 
-      console.log(data);
+      console.log("session: ", session);
 
       Alert.alert(
         "Sign Up Successful",
@@ -99,7 +153,7 @@ export default function SignupScreen() {
           </Text>
           <View className="space-y-6">
             <Input
-              label="Username"
+              label="Full Name"
               leftIcon={
                 <Icon
                   type="font-awesome"
@@ -108,11 +162,11 @@ export default function SignupScreen() {
                   size={20}
                 />
               }
-              onChangeText={setUsername}
-              value={username}
-              placeholder="user12"
+              onChangeText={setFull_name}
+              value={full_name}
+              placeholder="John Doe"
               autoCapitalize="none"
-              errorMessage={error}
+              errorMessage={full_nameError}
               className="bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2"
             />
             <Input
@@ -130,7 +184,7 @@ export default function SignupScreen() {
               placeholder="email@address.com"
               autoCapitalize="none"
               keyboardType="email-address"
-              errorMessage={error}
+              errorMessage={emailError}
               className="bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2"
             />
             <Input
@@ -148,7 +202,7 @@ export default function SignupScreen() {
               secureTextEntry
               placeholder="Password"
               autoCapitalize="none"
-              errorMessage={error}
+              errorMessage={passwordError}
               className="bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2"
             />
             <Input
@@ -166,7 +220,7 @@ export default function SignupScreen() {
               secureTextEntry
               placeholder="Confirm Password"
               autoCapitalize="none"
-              errorMessage={error}
+              errorMessage={confirmPasswordError}
               className="bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2"
             />
             <Button
