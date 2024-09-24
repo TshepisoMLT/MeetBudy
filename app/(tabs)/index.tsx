@@ -30,7 +30,7 @@ import { useHomeStore } from "@/stores/homeStore";
 import UploadStoryModal from "@/components/UploadModal";
 import { useUploadStore } from "@/stores/UploadStore";
 import UploadPostModal from "@/components/uploadPostModal";
-import UploadStatusModal from "@/components/uploadStoryModal";
+import UploadStatusModal from "@/components/UploadStoryModal";
 import React from "react";
 
 // Function to calculate the layout for each item in the FlatList
