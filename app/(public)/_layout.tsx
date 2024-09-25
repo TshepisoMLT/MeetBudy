@@ -46,11 +46,22 @@ export default function AuthLayout() {
         barStyle={
           MB_Preferred_Theme === "dark" ? "light-content" : "dark-content"
         }
-        backgroundColor={Colors[MB_Preferred_Theme ?? "light"].background}
+        backgroundColor={Colors[MB_Preferred_Theme ?? "light"].border}
       />
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="login" />
-        <Stack.Screen name="signup" />
+        <Stack.Screen
+          options={{
+            animation: "slide_from_right",
+            animationTypeForReplace: "push",
+          }}
+          name="login"
+        />
+        <Stack.Screen
+          options={{
+            animation: "slide_from_left",
+          }}
+          name="signup"
+        />
       </Stack>
     </ThemeProvider>
   );

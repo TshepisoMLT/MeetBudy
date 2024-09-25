@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   ScrollView,
@@ -6,125 +6,75 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Alert,
+  TextInput,
+  ImageBackground,
+  ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { supabase } from "@/lib/supabaseClient";
-import { Button, Input, Icon } from "@rneui/themed";
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { useHomeStore } from "@/stores/homeStore";
+import { Ionicons } from "@expo/vector-icons";
+import { useSignUp } from "@clerk/clerk-expo";
+
+const { width } = Dimensions.get("window");
 
 export default function SignupScreen() {
   const [email, setEmail] = useState("");
-  const [full_name, setFull_name] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [full_nameError, setFull_nameError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { MB_Preferred_Theme } = useHomeStore();
 
+  const { signUp, setActive } = useSignUp();
+
   const validateInputs = () => {
-    let isValid = true;
-    setError("");
-    setEmailError("");
-    setFull_nameError("");
-    setPasswordError("");
-    setConfirmPasswordError("");
-
-    if (!email.trim()) {
-      setEmailError("Email is required");
-      isValid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setEmailError("Invalid email address");
-      isValid = false;
+    if (!username.trim()) {
+      setError("Username is required");
+      return false;
     }
-
-    if (!full_name.trim()) {
-      setFull_nameError("Full_name is required");
-      isValid = false;
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Valid email is required");
+      return false;
     }
-
-    if (!password.trim()) {
-      setPasswordError("Password is required");
-      isValid = false;
-    } else if (password.length < 6) {
-      setPasswordError("Password must be at least 6 characters long");
-      isValid = false;
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-      setPasswordError(
-        "Password must contain at least one lowercase letter, one uppercase letter, and one number"
+    if (
+      password.length < 6 ||
+      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)
+    ) {
+      setError(
+        "Password must be at least 6 characters with lowercase, uppercase, and number"
       );
-      isValid = false;
+      return false;
     }
-
-    if (!confirmPassword.trim()) {
-      setConfirmPasswordError("Please confirm your password");
-      isValid = false;
-    } else if (password !== confirmPassword) {
-      setConfirmPasswordError("Passwords do not match");
-      isValid = false;
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return false;
     }
-
-    if (!isValid) {
-      setError("Please correct the errors in the form");
-    }
-
-    return isValid;
+    return true;
   };
 
-  const handleSignUp = async () => {
+  const onSignUpPress = async () => {
     if (!validateInputs()) return;
-
     setLoading(true);
     setError("");
-
     try {
-      const {
-        error,
-        data: { session },
-      } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          data: {
-            full_name: full_name,
-          },
-        },
-      });
-
-      if (error) {
-        Alert.alert(
-          "Error",
-          "Error signing up. Please try again.",
-          [
-            {
-              text: "Close",
-              onPress: () => {
-                console.log("Error signing up: ", error);
-                setError(error.message);
-              },
-            },
-          ],
-          { cancelable: false }
-        );
-        console.log(error);
-        throw error;
+      if (signUp) {
+        const data = await signUp.create({
+          emailAddress: email,
+          username,
+          password,
+        });
+        console.log("data: ", data);
+        if (data.createdUserId) router.replace("/(protected)");
       }
-
-      console.log("session: ", session);
-
-      Alert.alert(
-        "Sign Up Successful",
-        "Please check your email to verify your account.",
-        [{ text: "OK", onPress: () => router.replace("/(tabs)") }]
-      );
-    } catch (error) {
-      console.log(error);
-      setError("Error...");
+    } catch (err: any) {
+      console.error("error: ", JSON.stringify(err, null, 2));
+      setError(err.errors?.[0]?.message || "An error occurred during sign up");
     } finally {
       setLoading(false);
     }
@@ -139,111 +89,244 @@ export default function SignupScreen() {
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
         style={{
-          backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
+          backgroundColor: Colors[MB_Preferred_Theme ?? "light"].border,
         }}
       >
-        <View className="flex-1 justify-center p-8">
-          <Text
-            className="text-4xl font-bold text-center mb-12"
-            style={{
-              color: Colors[MB_Preferred_Theme ?? "light"].text,
-            }}
-          >
-            Join MeetBudy
-          </Text>
-          <View className="space-y-6">
-            <Input
-              label="Full Name"
-              leftIcon={
-                <Icon
-                  type="font-awesome"
-                  name="user"
-                  color={Colors[MB_Preferred_Theme ?? "light"].tint}
-                  size={20}
-                />
-              }
-              onChangeText={setFull_name}
-              value={full_name}
-              placeholder="John Doe"
-              autoCapitalize="none"
-              errorMessage={full_nameError}
-              className="bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2"
+        <View className="h-1/4 p-10 justify-center">
+          <View className="items-center justify-center rounded-2xl px-4 py-2">
+            <Ionicons
+              name="chatbubble-ellipses-outline"
+              size={width * 0.12}
+              color={Colors[MB_Preferred_Theme ?? "light"].tabIconSelected}
             />
-            <Input
-              label="Email"
-              leftIcon={
-                <Icon
-                  type="font-awesome"
-                  name="envelope"
-                  color={Colors[MB_Preferred_Theme ?? "light"].tint}
-                  size={20}
-                />
-              }
-              onChangeText={setEmail}
-              value={email}
-              placeholder="email@address.com"
-              autoCapitalize="none"
-              keyboardType="email-address"
-              errorMessage={emailError}
-              className="bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2"
-            />
-            <Input
-              label="Password"
-              leftIcon={
-                <Icon
-                  type="font-awesome"
-                  name="lock"
-                  color={Colors[MB_Preferred_Theme ?? "light"].tint}
-                  size={20}
-                />
-              }
-              onChangeText={setPassword}
-              value={password}
-              secureTextEntry
-              placeholder="Password"
-              autoCapitalize="none"
-              errorMessage={passwordError}
-              className="bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2"
-            />
-            <Input
-              label="Confirm Password"
-              leftIcon={
-                <Icon
-                  type="font-awesome"
-                  name="lock"
-                  color={Colors[MB_Preferred_Theme ?? "light"].tint}
-                  size={20}
-                />
-              }
-              onChangeText={setConfirmPassword}
-              value={confirmPassword}
-              secureTextEntry
-              placeholder="Confirm Password"
-              autoCapitalize="none"
-              errorMessage={confirmPasswordError}
-              className="bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2"
-            />
-            <Button
-              title="Sign Up"
-              loading={loading}
-              onPress={handleSignUp}
-              className="rounded-lg py-3 mt-6"
-              buttonStyle={{
-                backgroundColor: Colors[MB_Preferred_Theme ?? "light"].tint,
+            <Text
+              className="text-6xl font-bold text-center mb-2"
+              style={{
+                color: Colors[MB_Preferred_Theme ?? "light"].text,
               }}
-              titleStyle={{ fontSize: 18 }}
-            />
-            <TouchableOpacity onPress={() => router.push("/login")}>
+            >
+              MeetBudy
+            </Text>
+          </View>
+        </View>
+        <View
+          className="flex-1 justify-center p-8 rounded-t-3xl space-y-6"
+          style={{
+            backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
+          }}
+        >
+          <View className="space-y-4">
+            {/* Username Input */}
+            <View>
               <Text
-                className="text-center"
+                className="text-lg font-semibold mb-1"
                 style={{
-                  color: Colors[MB_Preferred_Theme ?? "light"].tint,
+                  color: Colors[MB_Preferred_Theme ?? "light"].text,
                 }}
               >
-                Already have an account? Log in
+                Username
               </Text>
+              <TextInput
+                value={username}
+                onChangeText={setUsername}
+                placeholder="Enter your username"
+                className="rounded-lg px-4 py-3"
+                placeholderTextColor={
+                  Colors[MB_Preferred_Theme ?? "light"].textSecondary
+                }
+                style={{
+                  backgroundColor: Colors[MB_Preferred_Theme ?? "light"].input,
+                  color: Colors[MB_Preferred_Theme ?? "light"].text,
+                }}
+                accessibilityLabel="Username input"
+              />
+            </View>
+            {/* Email Input */}
+            <View>
+              <Text
+                className="text-lg font-semibold mb-1"
+                style={{
+                  color: Colors[MB_Preferred_Theme ?? "light"].text,
+                }}
+              >
+                Email
+              </Text>
+              <TextInput
+                value={email}
+                onChangeText={setEmail}
+                placeholder="Enter your email"
+                className="rounded-lg px-4 py-3"
+                placeholderTextColor={
+                  Colors[MB_Preferred_Theme ?? "light"].textSecondary
+                }
+                style={{
+                  backgroundColor: Colors[MB_Preferred_Theme ?? "light"].input,
+                  color: Colors[MB_Preferred_Theme ?? "light"].text,
+                }}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                accessibilityLabel="Email input"
+              />
+            </View>
+            {/* Password Input */}
+            <View>
+              <Text
+                className="text-lg font-semibold mb-1"
+                style={{
+                  color: Colors[MB_Preferred_Theme ?? "light"].text,
+                }}
+              >
+                Password
+              </Text>
+              <View className="relative">
+                <TextInput
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="Enter your password"
+                  className="rounded-lg px-4 py-3 pr-10"
+                  placeholderTextColor={
+                    Colors[MB_Preferred_Theme ?? "light"].textSecondary
+                  }
+                  style={{
+                    backgroundColor:
+                      Colors[MB_Preferred_Theme ?? "light"].input,
+                    color: Colors[MB_Preferred_Theme ?? "light"].text,
+                  }}
+                  secureTextEntry={!showPassword}
+                  accessibilityLabel="Password input"
+                />
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3"
+                >
+                  <Ionicons
+                    name={showPassword ? "eye-off" : "eye"}
+                    size={24}
+                    color={Colors[MB_Preferred_Theme ?? "light"].text}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+            {/* Confirm Password Input */}
+            <View>
+              <Text
+                className="text-lg font-semibold mb-1"
+                style={{
+                  color: Colors[MB_Preferred_Theme ?? "light"].text,
+                }}
+              >
+                Confirm Password
+              </Text>
+              <View className="relative">
+                <TextInput
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  placeholder="Confirm your password"
+                  className="rounded-lg px-4 py-3 pr-10"
+                  placeholderTextColor={
+                    Colors[MB_Preferred_Theme ?? "light"].textSecondary
+                  }
+                  style={{
+                    backgroundColor:
+                      Colors[MB_Preferred_Theme ?? "light"].input,
+                    color: Colors[MB_Preferred_Theme ?? "light"].text,
+                  }}
+                  secureTextEntry={!showConfirmPassword}
+                  accessibilityLabel="Confirm password input"
+                />
+                <TouchableOpacity
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-3"
+                >
+                  <Ionicons
+                    name={showConfirmPassword ? "eye-off" : "eye"}
+                    size={24}
+                    color={Colors[MB_Preferred_Theme ?? "light"].text}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+
+          {error && (
+            <Text className="text-red-500 text-center font-semibold">
+              {error}
+            </Text>
+          )}
+
+          <View className="flex-col pt-6">
+            <TouchableOpacity
+              onPress={onSignUpPress}
+              disabled={loading}
+              className="rounded-2xl py-3"
+              style={{
+                backgroundColor:
+                  Colors[MB_Preferred_Theme ?? "light"].buttonPrimary,
+                opacity: loading ? 0.7 : 1,
+              }}
+            >
+              {loading ? (
+                <ActivityIndicator
+                  color={Colors[MB_Preferred_Theme ?? "light"].buttonText}
+                  size="small"
+                />
+              ) : (
+                <Text
+                  className="text-center text-xl font-bold"
+                  style={{
+                    color: Colors[MB_Preferred_Theme ?? "light"].buttonText,
+                  }}
+                >
+                  Sign Up
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
+
+          <View className="flex-row justify-center items-center">
+            <View className="flex-1 h-px bg-gray-300" />
+            <Text className="mx-4 text-gray-500 font-medium">or</Text>
+            <View className="flex-1 h-px bg-gray-300" />
+          </View>
+
+          <View className="space-y-3">
+            <View className="flex-row justify-evenly space-x-4">
+              <TouchableOpacity
+                onPress={() => {}}
+                className="rounded-full p-3 bg-gray-200 flex-row justify-center items-center"
+              >
+                <Ionicons name="logo-google" size={28} color="#DB4437" />
+                <Text className="text-gray-800 text-center ml-2 font-semibold">
+                  Continue with Google
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {}}
+                className="rounded-full p-3 bg-[#3b5998] flex-row justify-center items-center"
+              >
+                <Ionicons name="logo-facebook" size={28} color="white" />
+                <Text className="text-gray-200 text-center ml-2 font-semibold">
+                  Continue with Facebook
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            onPress={() => {
+              router.push("/login");
+            }}
+            className="mt-6 justify-center items-center"
+          >
+            <Text
+              style={{
+                color: Colors[MB_Preferred_Theme ?? "light"].info,
+              }}
+              className="text-center text-base font-semibold"
+            >
+              Already have an account? Log in
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

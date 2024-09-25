@@ -4,45 +4,42 @@
  * - Provides a consistent header style and navigation animation across the app.
  * - Includes screens for the main tab navigation, a "not found" screen, a contact screen, and a profile screen.
  */
-
+import "react-native-gesture-handler";
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack, useRouter } from "expo-router";
+import { Slot, Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { TouchableOpacity, StatusBar, PlatformColor } from "react-native";
+import {
+  TouchableOpacity,
+  StatusBar,
+  PlatformColor,
+  View,
+  Text,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useHomeStore } from "@/stores/homeStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Appearance } from "react-native";
+import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
+import { tokenCache } from "@/helper/tokenCache";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
-export default function RootLayout() {
+function NavigationLayout() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const { setMB_Preferred_Theme } = useHomeStore();
 
-  const [loaded, error] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-    RobotoRegular: require("../assets/fonts/Roboto-Regular.ttf"),
-    RobotoBold: require("../assets/fonts/Roboto-Bold.ttf"),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-      router.replace("/(public)/login");
-      // router.replace("/(tabs)");
-    }
-  }, [loaded, router]);
+  const { isSignedIn, isLoaded } = useAuth();
+  const segments = useSegments();
 
   const getPreferredTheme = async () => {
     try {
@@ -74,94 +71,76 @@ export default function RootLayout() {
     return () => subscription.remove();
   }, []);
 
-  if (!loaded) {
-    return null;
-  }
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    const inTabsGroup = segments[0] === "(public)";
+
+    if (!isSignedIn) {
+      console.log("Is signed in: ", isSignedIn, " navigate to login");
+      router.replace("/login");
+    }
+    if (!inTabsGroup && !isSignedIn) {
+      console.log(
+        "Is signed in: ",
+        isSignedIn,
+        " in tabs groups",
+        inTabsGroup,
+        " navigate to login"
+      );
+      router.replace("/login");
+    } else {
+      console.log("Is signed in: ", isSignedIn, " navigate to protected");
+      router.replace("/home");
+    }
+  }, [isSignedIn]);
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <StatusBar
-        barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
-      />
-      <Stack
-        screenOptions={{
-          animation: "slide_from_right",
-          headerStyle: {
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-          },
-          headerTitleStyle: {
-            fontFamily: "RobotoBold",
-            fontSize: 18,
-          },
-          headerTitleAlign: "center",
-          headerTintColor: Colors[colorScheme ?? "light"].icon,
-          headerBackTitleVisible: false,
-          headerBackTitle: "Back",
-          headerBackButtonMenuEnabled: true,
-        }}
-      >
-        <Stack.Screen name="(public)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="settings"
-          options={{
-            title: "",
-            headerRight: () => (
-              <TouchableOpacity
-                onPress={() => console.log("Contact Us")}
-                style={{ marginRight: 15 }}
-              >
-                <Ionicons
-                  name="call-outline"
-                  size={24}
-                  color={Colors[colorScheme ?? "light"].tabIconSelected}
-                />
-              </TouchableOpacity>
-            ),
-            animation: "slide_from_right",
+    <>
+      {isLoaded && (
+        <Stack
+          screenOptions={{
+            headerShown: false,
           }}
-        />
-        <Stack.Screen
-          name="profile"
-          options={{
-            title: "Profile",
-            headerRight: () => (
-              <TouchableOpacity
-                onPress={() => console.log("Edit Profile")}
-                style={{ marginRight: 15 }}
-              >
-                <Ionicons
-                  name="pencil-outline"
-                  size={24}
-                  color={Colors[colorScheme ?? "light"].tabIconSelected}
-                />
-              </TouchableOpacity>
-            ),
-            animation: "slide_from_left",
-          }}
-        />
-        <Stack.Screen
-          name="messages"
-          options={{
-            title: "",
-            headerRight: () => (
-              <TouchableOpacity
-                onPress={() => console.log("More Messages")}
-                style={{ marginRight: 15 }}
-              >
-                <Ionicons
-                  name="settings-outline"
-                  size={24}
-                  color={Colors[colorScheme ?? "light"].tabIconSelected}
-                />
-              </TouchableOpacity>
-            ),
-            animation: "slide_from_right",
-            headerShadowVisible: false,
-          }}
-        />
-      </Stack>
-    </ThemeProvider>
+        >
+          {!isSignedIn ? (
+            <Stack.Screen name="(public)" options={{ headerShown: false }} />
+          ) : (
+            <Stack.Screen name="(protected)" options={{ headerShown: false }} />
+          )}
+        </Stack>
+      )}
+    </>
+  );
+}
+
+if (!publishableKey) {
+  
+  throw new Error(
+    "Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env"
+  );
+}
+
+export default function RootLayout() {
+  const colorScheme = useColorScheme();
+  const { MB_Preferred_Theme } = useHomeStore();
+  return (
+    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+      <ClerkLoaded>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <ThemeProvider
+            value={MB_Preferred_Theme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <StatusBar
+              barStyle={
+                MB_Preferred_Theme === "dark" ? "light-content" : "dark-content"
+              }
+              backgroundColor={Colors[MB_Preferred_Theme ?? "light"].background}
+            />
+            <NavigationLayout />
+          </ThemeProvider>
+        </GestureHandlerRootView>
+      </ClerkLoaded>
+    </ClerkProvider>
   );
 }

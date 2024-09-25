@@ -16,7 +16,6 @@ const ProfilePage: React.FC = () => {
   return (
     <View className="flex-1 bg-gray-100">
       <ScrollView>
-
         {/* User profile header */}
         <View className="items-center p-6 bg-white">
           <Image
@@ -64,7 +63,6 @@ const ProfilePage: React.FC = () => {
         <View className="bg-white p-6 mt-2">
           <Text className="text-xl font-bold mb-3">Skills</Text>
           <View className="flex-row flex-wrap">
-
             {/* Map through skills array to render skill tags */}
             {[
               "React Native",
@@ -86,7 +84,7 @@ const ProfilePage: React.FC = () => {
         {/* Recent Activity section */}
         <View className="bg-white p-6 mt-2">
           <Text className="text-xl font-bold mb-3">Recent Activity</Text>
-          
+
           {/* Map through activity array to render recent activities */}
           {[1, 2, 3].map((_, index) => (
             <View key={index} className="flex-row items-center mb-4">
@@ -102,4 +100,4 @@ const ProfilePage: React.FC = () => {
   );
 };
 
-export default ProfilePage
+export default ProfilePage;

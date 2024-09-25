@@ -21,6 +21,7 @@ import { useHomeStore } from "@/stores/homeStore";
 import { Ionicons } from "@expo/vector-icons";
 import { useUploadStore } from "@/stores/UploadStore";
 import { useUser } from "@clerk/clerk-expo";
+import { fetcher } from "@/helper/fetcher";
 
 interface StoriesResponse {
   message: string;
@@ -33,29 +34,6 @@ interface StoriesResponse {
   stack?: string;
   isError: boolean;
 }
-
-// Fetcher function for SWR
-const fetcher = async (): Promise<StoriesResponse> => {
-  try {
-    // Attempt to fetch stories from the API
-    return await getStories("http://192.168.40.112:8000/api/v1/stories");
-  } catch (error) {
-    // Handle network errors
-    if (error instanceof NetworkError) {
-      return {
-        message: "Network error. Please check your connection and try again.",
-        status: 0,
-        isError: true,
-      };
-    } else {
-      return {
-        message: "An unexpected error occurred. Please try again later.",
-        status: 0,
-        isError: true,
-      };
-    }
-  }
-};
 
 // StoriesComponent displays a horizontal list of user stories
 export const StoriesComponent = memo(
@@ -76,24 +54,26 @@ export const StoriesComponent = memo(
       data: response,
       mutate,
       error,
-    } = useSWR("/api/v1/stories", fetcher, {
-      revalidateOnReconnect: true,
-      shouldRetryOnError: true,
-      onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
-        // Log errors to console
-        if (error) {
-          console.error("Error fetching stories:", error);
-        }
-        // Retry up to 5 times when online
-        if (config.isOnline() && retryCount < 5) {
-          setTimeout(() => revalidate({ retryCount }), 60000); // Retry every minute
-        }
-      },
-      keepPreviousData: true,
-      refreshWhenOffline: false,
-      refreshInterval: 5 * 60 * 1000, // Refresh every 5 minutes
-      dedupingInterval: 5 * 60 * 1000, // Dedupe requests within 5 minutes
-    });
+    } = useSWR(
+      "/api/v1/stories",
+      () => fetcher("http://192.168.40.112:8000/api/v1/stories", "stories"),
+      {
+        revalidateOnReconnect: true,
+        shouldRetryOnError: true,
+        onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
+          if (error) {
+            console.error("Error fetching stories:", error);
+          }
+          if (retryCount < 5) {
+            setTimeout(() => revalidate({ retryCount }), 60000);
+          }
+        },
+        keepPreviousData: true,
+        refreshWhenOffline: false,
+        refreshInterval: 5 * 60 * 1000,
+        dedupingInterval: 5 * 60 * 1000,
+      }
+    );
 
     const showToast = (message: string) => {
       ToastAndroid.showWithGravity(

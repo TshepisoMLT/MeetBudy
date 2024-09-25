@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   View,
   ScrollView,
@@ -16,43 +16,66 @@ import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { useHomeStore } from "@/stores/homeStore";
 import { Ionicons } from "@expo/vector-icons";
+import { useSignIn } from "@clerk/clerk-expo";
 
 const { width } = Dimensions.get("window");
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { MB_Preferred_Theme } = useHomeStore();
-  const emailInputRef = useRef<TextInput>(null);
+  const { signIn, setActive, isLoaded } = useSignIn();
+  // const identifierInputRef = useRef<TextInput>(null);
 
-  useEffect(() => {
-    emailInputRef.current?.focus();
-  }, []);
+  // useEffect(() => {
+  //   if (identifier === "") identifierInputRef.current?.focus();
+  // }, []);
 
-  async function signInWithEmail() {
+  const onLogInPress = useCallback(async () => {
+    if (!isLoaded) {
+      return;
+    }
+
     if (!validateForm()) return;
+
     setLoading(true);
     setError("");
-    const { error, data } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
 
-    if (error) setError(error.message);
-    setLoading(false);
-  }
+    try {
+      const signInAttempt = await signIn.create({
+        identifier: identifier,
+        password,
+      });
+
+      if (signInAttempt.status === "complete") {
+        await setActive({ session: signInAttempt.createdSessionId });
+        router.replace("/(protected)");
+      } else {
+        setError("Login failed. Please check your credentials and try again.");
+      }
+    } catch (err: any) {
+      // console.error(JSON.stringify(err, null, 2));
+      setError(err.errors?.[0]?.message || "An error occurred during login");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   function validateForm() {
-    if (!email) {
-      setError("Email is required");
+    console.log(identifier);
+    if (!identifier) {
+      setError("Username or Email is required");
       return false;
     }
     if (!password) {
       setError("Password is required");
       return false;
+    }
+    if (password.length < 8) {
+      setError("Min password length is 8");
     }
     return true;
   }
@@ -66,39 +89,30 @@ export default function LoginScreen() {
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
         style={{
-          backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
+          backgroundColor: Colors[MB_Preferred_Theme ?? "light"].border,
         }}
       >
         <View className="h-2/5 p-10 justify-center">
-          <ImageBackground
-            source={{
-              uri: "https://cdn-icons-png.flaticon.com/512/1828/1828506.png",
-            }}
-            className="w-full h-full items-center justify-end"
-            resizeMode="contain"
-          >
-            <View className="items-center justify-center bg-slate-700/40 rounded-2xl px-4 py-2">
-              <Ionicons
-                name="chatbubble-ellipses-outline"
-                size={width * 0.12}
-                color={Colors[MB_Preferred_Theme ?? "light"].tabIconSelected}
-              />
-              <Text
-                className="text-6xl font-bold text-center mb-2"
-                style={{
-                  color: Colors[MB_Preferred_Theme ?? "light"].text,
-                }}
-              >
-                MeetBudy
-              </Text>
-            </View>
-          </ImageBackground>
+          <View className="items-center justify-center rounded-2xl px-4 py-2">
+            <Ionicons
+              name="chatbubble-ellipses-outline"
+              size={width * 0.12}
+              color={Colors[MB_Preferred_Theme ?? "light"].tabIconSelected}
+            />
+            <Text
+              className="text-6xl font-bold text-center mb-2"
+              style={{
+                color: Colors[MB_Preferred_Theme ?? "light"].text,
+              }}
+            >
+              MeetBudy
+            </Text>
+          </View>
         </View>
         <View
           className="flex-1 justify-center p-8 rounded-t-3xl space-y-6"
           style={{
-            backgroundColor:
-              Colors[MB_Preferred_Theme ?? "light"].modalBackground,
+            backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
           }}
         >
           <View className="space-y-4">
@@ -109,25 +123,22 @@ export default function LoginScreen() {
                   color: Colors[MB_Preferred_Theme ?? "light"].text,
                 }}
               >
-                Email
+                Username or Email
               </Text>
               <TextInput
-                ref={emailInputRef}
-                value={email}
-                onChangeText={setEmail}
-                placeholder="Enter your email"
+                value={identifier}
+                onChangeText={setIdentifier}
+                placeholder="Enter your username or email"
                 className="rounded-lg px-4 py-3"
                 placeholderTextColor={
                   Colors[MB_Preferred_Theme ?? "light"].textSecondary
                 }
                 style={{
-                  backgroundColor:
-                    Colors[MB_Preferred_Theme ?? "light"].background,
+                  backgroundColor: Colors[MB_Preferred_Theme ?? "light"].input,
                   color: Colors[MB_Preferred_Theme ?? "light"].text,
                 }}
-                keyboardType="email-address"
                 autoCapitalize="none"
-                accessibilityLabel="Email input"
+                accessibilityLabel="Username or Email input"
               />
             </View>
             <View>
@@ -150,7 +161,7 @@ export default function LoginScreen() {
                   }
                   style={{
                     backgroundColor:
-                      Colors[MB_Preferred_Theme ?? "light"].background,
+                      Colors[MB_Preferred_Theme ?? "light"].input,
                     color: Colors[MB_Preferred_Theme ?? "light"].text,
                   }}
                   secureTextEntry={!showPassword}
@@ -178,7 +189,7 @@ export default function LoginScreen() {
 
           <View className="flex-col pt-6">
             <TouchableOpacity
-              onPress={signInWithEmail}
+              onPress={onLogInPress}
               disabled={loading}
               className="rounded-2xl py-3"
               style={{
@@ -221,7 +232,7 @@ export default function LoginScreen() {
             <View className="flex-row justify-evenly space-x-4">
               <TouchableOpacity
                 onPress={() => {}}
-                className="rounded-full p-3 bg-white flex-row justify-center items-center"
+                className="rounded-full p-3 bg-gray-200 flex-row justify-center items-center"
               >
                 <Ionicons name="logo-google" size={28} color="#DB4437" />
                 <Text className="text-gray-800 text-center ml-2 font-semibold">

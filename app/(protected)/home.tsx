@@ -17,7 +17,7 @@ import {
 import { Colors } from "@/constants/Colors";
 import { useCallback, useEffect, useMemo } from "react";
 import StoryModal from "@/components/StoryModal";
-import { StoriesComponent } from "@/components/StoriesContainer";
+// import { StoriesComponent } from "@/components/StoriesContainer";
 import { PostComponent } from "@/components/PostComponent";
 import CommentsModal from "@/components/CommentsModal";
 import { Post, Story } from "@/constants/Types";
@@ -32,6 +32,9 @@ import { useUploadStore } from "@/stores/UploadStore";
 import UploadPostModal from "@/components/uploadPostModal";
 import UploadStatusModal from "@/components/UploadStoryModal";
 import React from "react";
+import Header from "@/components/home/Header";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StoriesComponent } from "@/components/stories/StoriesContainer";
 
 // Function to calculate the layout for each item in the FlatList
 const ItemLayout = (data: any, index: number) => ({
@@ -243,19 +246,14 @@ export default function HomeScreen() {
 
   // Render main content
   return (
-    <View
+    <SafeAreaView
       style={{
         flex: 1,
         backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
       }}
     >
-      {/* Set status bar style based on color scheme */}
-      <StatusBar
-        barStyle={
-          MB_Preferred_Theme === "dark" ? "light-content" : "dark-content"
-        }
-      />
-
+      {/* Header */}
+      <Header />
       {/* FlatList to render posts */}
       <FlatList
         ListHeaderComponent={ListHeaderComponent}
@@ -324,6 +322,6 @@ export default function HomeScreen() {
 
       {/* Render UploadStatusModal when isPostingStory is true */}
       {isPostingStory && <UploadStatusModal />}
-    </View>
+    </SafeAreaView>
   );
 }
