@@ -7,29 +7,51 @@
  *
  * This component is likely exported as the main profile page for the application, and can be used throughout the app to display the user's profile information.
  */
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useHomeStore } from "@/stores/homeStore";
+import { Colors } from "@/constants/Colors";
+import { useUser } from "@clerk/clerk-expo";
+import EditProfile from "@/components/profile/EditProfile";
 
 // ProfilePage component
 const ProfilePage: React.FC = () => {
+  // Get the current color scheme
+  const { MB_Preferred_Theme } = useHomeStore();
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+
+  const { user } = useUser();
+
   return (
-    <View className="flex-1 bg-gray-100">
-      <ScrollView>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
+      }}
+    >
+      <ScrollView className="pt-10">
         {/* User profile header */}
-        <View className="items-center p-6 bg-white">
+        <View className="items-center p-6">
           <Image
-            source={{ uri: "https://randomuser.me/api/portraits/men/10.jpg" }}
+            source={{
+              uri:
+                user?.imageUrl ??
+                "https://randomuser.me/api/portraits/men/10.jpg",
+            }}
             className="w-32 h-32 rounded-full mb-4"
           />
-          <Text className="text-2xl font-bold mb-1">John Doe</Text>
+          <Text className="text-2xl font-bold mb-1">
+            {user?.fullName ?? `@${user?.username}`}
+          </Text>
           <Text className="text-base text-gray-600 text-center">
             Software Developer | React Native Enthusiast
           </Text>
         </View>
 
         {/* User statistics */}
-        <View className="flex-row justify-around p-6 bg-white mt-2">
+        <View className="flex-row justify-around p-6 mt-2">
           <View className="items-center">
             <Text className="text-lg font-bold">250</Text>
             <Text className="text-sm text-gray-600">Posts</Text>
@@ -45,12 +67,18 @@ const ProfilePage: React.FC = () => {
         </View>
 
         {/* Edit profile button */}
-        <TouchableOpacity className="bg-blue-500 py-3 px-4 rounded-lg mx-6 mt-4">
+        <TouchableOpacity
+          className="py-3 px-4 rounded-lg mx-6 mt-4"
+          style={{
+            backgroundColor: Colors[MB_Preferred_Theme ?? "light"].tint,
+          }}
+          onPress={() => setIsEditModalVisible(true)}
+        >
           <Text className="text-white text-center font-bold">Edit Profile</Text>
         </TouchableOpacity>
 
         {/* About Me section */}
-        <View className="bg-white p-6 mt-2">
+        <View className="p-6 mt-2">
           <Text className="text-xl font-bold mb-3">About Me</Text>
           <Text className="text-base text-gray-700">
             Passionate about creating beautiful and functional mobile
@@ -60,7 +88,7 @@ const ProfilePage: React.FC = () => {
         </View>
 
         {/* Skills section */}
-        <View className="bg-white p-6 mt-2">
+        <View className="  p-6 mt-2">
           <Text className="text-xl font-bold mb-3">Skills</Text>
           <View className="flex-row flex-wrap">
             {/* Map through skills array to render skill tags */}
@@ -82,7 +110,7 @@ const ProfilePage: React.FC = () => {
         </View>
 
         {/* Recent Activity section */}
-        <View className="bg-white p-6 mt-2">
+        <View className="  p-6 mb-10">
           <Text className="text-xl font-bold mb-3">Recent Activity</Text>
 
           {/* Map through activity array to render recent activities */}
@@ -96,6 +124,11 @@ const ProfilePage: React.FC = () => {
           ))}
         </View>
       </ScrollView>
+      {/* Edit profile modal */}
+      <EditProfile
+        isEditModalVisible={isEditModalVisible}
+        setIsEditModalVisible={setIsEditModalVisible}
+      />
     </View>
   );
 };

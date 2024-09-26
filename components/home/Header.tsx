@@ -16,7 +16,7 @@ const Header = () => {
       style={{
         backgroundColor: Colors[MB_Preferred_Theme ?? "light"].background,
       }}
-      className="justify-between flex-row items-center p-3 shadow-lg border-b border-slate-600/20"
+      className="justify-between flex-row items-center p-3 shadow-sm shadow-slate-400"
     >
       <TouchableOpacity
         onPress={() => router.push("/Profile")}
@@ -49,7 +49,7 @@ const Header = () => {
         >
           <Ionicons
             name="chatbubble-outline"
-            color={Colors[MB_Preferred_Theme ?? "light"].info}
+            color={Colors[MB_Preferred_Theme ?? "light"].icon}
             size={28}
           />
         </TouchableOpacity>
@@ -58,8 +58,8 @@ const Header = () => {
           className="rounded-full p-2"
         >
           <Ionicons
-            name="settings-outline"
-            color={Colors[MB_Preferred_Theme ?? "light"].info}
+            name="notifications-outline"
+            color={Colors[MB_Preferred_Theme ?? "light"].icon}
             size={28}
           />
         </TouchableOpacity>
